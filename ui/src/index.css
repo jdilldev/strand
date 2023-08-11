@@ -1,0 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;600;700;800;900&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	height: 100vh;
+	font-family: "Inter";
+	color: #666666;
+}
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+		monospace;
+}
+
+@layer base {
+	h1 {
+		@apply text-2xl;
+	}
+
+	h2 {
+		@apply text-[30px] font-semibold text-[#666666];
+	}
+
+	h3 {
+		@apply text-[24px] font-medium;
+	}
+
+	p {
+		@apply text-[14px] font-normal leading-4;
+	}
+}
