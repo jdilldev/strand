@@ -30,13 +30,11 @@ export const TextField = (props: TextFieldType) => {
 type ButtonType = {
 	align?: 'center'
 	text: string
+	onPress: () => void
 }
-export const Button = ({ text, align }: ButtonType) => {
+export const Button = (props: ButtonType) => {
+	const { onPress } = props
 
-	return <div
-		class='w-7/12 md:w-1/3 bg-[#306BC3] text-white rounded-full p-3'
-		style={{ "align-self": 'center' }}
-	>
-		<p class='text-center'>{text}</p>
-	</div>
+	return <button onClick={() => onPress()} class='capitalize w-7/12 md:w-1/3 bg-[#306BC3] text-white rounded-full p-3 hover:opacity-80'> {props.text}</button>
+
 }
