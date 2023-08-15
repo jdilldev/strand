@@ -1,19 +1,20 @@
 import { JSXElement } from "solid-js"
+import { BrandMapping, ColorSwatchType, ThreadBrandType } from "../../Types"
 
-type ColorSwatchType = {
-    color: string
-}
 
-export const ColorSwatch = ({ color }: ColorSwatchType) =>
-    <div class='flex flex-col items-start gap-1'>
+export const ColorSwatch = ({ color, description, code, brand }: ColorSwatchType) =>
+    <div class='flex flex-col items-start gap-1'
+        onClick={() => console.log('click')}
+    >
         <div
             class="w-20 h-20 rounded-md hover:-skew-y-3 hover:-skew-x-3"
             style={{ background: color }}
         />
         <div class='flex flex-col'>
-            <span class='text-xs w-20'>DMC 333</span>
-            <span class='text-xs w-20'>Blue Violet - Very dark</span>
+            <span class={`text-xs w-20`}>{`${BrandMapping.get(brand)} ${code}`}</span>
+            <span class='text-xs w-20'>{description}</span>
         </div>
+
     </div>
 
 export const ColorSwatchContainer = ({ heading, children }: { heading: string, children: JSXElement }) => <>
