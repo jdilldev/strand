@@ -2,8 +2,9 @@ import { JSXElement } from "solid-js"
 import { BrandMapping, ColorSwatchType, ThreadBrandType } from "../../Types"
 
 
-export const ColorSwatch = ({ color, description, code, brand }: ColorSwatchType) =>
-    <div class='flex flex-col items-start gap-1'
+export const ColorSwatch = ({ color, description, code, brand }: ColorSwatchType) => {
+    console.log(color, code, brand, description)
+    return <div class='flex flex-col items-start gap-1'
         onClick={() => console.log('click')}
     >
         <div
@@ -16,10 +17,11 @@ export const ColorSwatch = ({ color, description, code, brand }: ColorSwatchType
         </div>
 
     </div>
+}
 
-export const ColorSwatchContainer = ({ heading, children }: { heading: string, children: JSXElement }) => <>
+/* export const ColorSwatchContainer = ({ heading, children }: { heading: string, children: JSXElement }) => <>
     <h3>{heading}</h3>
     <div class='flex flex-row pb-8 w-full gap-4 items-center'>
         {children}
     </div>
-</>
+</> */

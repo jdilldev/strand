@@ -4,7 +4,7 @@ def get_dmc(session):
     res = []
     for thread in session.query(models.DmcThread):
         print (thread.dmc_code)
-        res.append({'code':thread.dmc_code,'color':thread.color, 'desc':thread.description })
+        res.append({'code':thread.dmc_code,'color':thread.color, 'description':thread.description })
     return res
 
 def add_dmc_thread(session, code, color, description, variant = '6-strand'):
