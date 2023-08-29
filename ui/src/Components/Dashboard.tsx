@@ -1,88 +1,88 @@
-import { RadioGroup, TextField } from "./Shared"
+import { TextField } from "./Shared"
 import { ColorSwatch } from "./ColorSwatch"
-import { createEffect, createResource, createSignal, For, Show } from "solid-js"
-import { ThreadBrandType } from "../../Types"
+import { createResource, createSignal, For, Show } from "solid-js"
+import AddThreadInput from "./AddThead"
+import { ColorSwatchType } from "../../Types"
 import axios from "axios"
+import { ColorSwatchModal } from "./ColorSwatchModal"
 
+// fiber type
 export const Dashboard = () => {
     const fetchDmcThreads = async () => {
-        return (await fetch(`http://127.0.0.1:5000/get_dmc`)).json();
+        const r = (await axios.all([
+            axios.get(`http://127.0.0.1:5000/dmc`),
+            axios.get(`http://127.0.0.1:5000/anchor`),
+            axios.get(`http://127.0.0.1:5000/weeks_dye_works`),
+            axios.get(`http://127.0.0.1:5000/classic_colorworks`),
+        ]).then(axios.spread((dmc, anchor, weeksColorWorks, classicColorworks) => {
+            return { data: [...dmc.data, ...anchor.data, ...weeksColorWorks.data, ...classicColorworks.data] }
+
+        })))
+        return r.data
     }
-    const [data, { mutate, refetch }] = createResource(fetchDmcThreads);
-    const [showModal, setShowModal] = createSignal(false)
-    const [hex, setHex] = createSignal('#')
-    const [colorDescription, setColorDescription] = createSignal('')
-    const [brandCode, setBrandCode] = createSignal<number | string>('TBD')
-    const [brand, setBrand] = createSignal<ThreadBrandType>('dmc')
+
+    const [data, { mutate }] = createResource(fetchDmcThreads);
+    const [showAddThreadForm, setShowAddThreadForm] = createSignal(false)
+    const [showEditSwatchModal, setShowEditSwatchModal] = createSignal(true)
+    const [searchField, setSearchField] = createSignal('')
+
+    //const filtered = data().filter((d: ColorSwatchType) => d.brand == 'anchor')
 
     return <Show when={data()} fallback={<p>Loading</p>}>
-        <div class='p-4 flex flex-col justify-evenly items-start'>
-            <button class="self-end uppercase font-light bg-orange-300 px-4 rounded-md" onClick={() => setShowModal(true)}>Add Thread</button>
-            <TextField classnames='self-center mb-8' label='Search' inputType='text' rounded />
-            {showModal() && <div class='absolute top-1/4 w-1/2 h-1/2 bg-gray-100 flex flex-col justify-between self-center rounded-md'>
-                <div class='p-3'>
-                    <p class="text-center text-lg font-light text-black">Add to Thread Repository</p>
-                    <div class='flex flex-col mb-4 '>
-                        <RadioGroup
-                            name='brand'
-                            control={brand()}
-                            onChangeAction={(v: ThreadBrandType) => setBrand(v)}
-                            options={[{ name: 'DMC', value: 'dmc' }, { name: 'Anchor', value: 'anchor' }, { name: 'Weeks Dye Works', value: 'weeksDyeWorks' }, { name: 'Classic Colorworks', value: 'classicColorwoks' }]} />
-                    </div>
-                    <p>Color:</p>
-                    <div class='flex flex-row items-center'>
-                        <input type='color' value={hex()} onInput={(e) => setHex(e.target.value)} />
-                        <input class='h-2 text-sm border-black bg-transparent w-20 pl-0' value={hex()} onChange={(e) => setHex(e.target.value)} />
-                    </div>
-                    {(brand() === 'dmc' || brand() === 'anchor') &&
-                        <>
-                            <p>Brand Code</p>
-                            <input class='h-2 text-sm border-black bg-transparent w-20 pl-0' value={brandCode()} onChange={(e) => {
-                                const code = Number.parseInt(e.target.value);
-                                console.log(Number.isNaN(code))
-                                if (Number.isNaN(code))
-                                    setBrandCode('invalid')
-                                else
-                                    setBrandCode(code)
-                            }} />
-                        </>
-                    }
-
-                    <p>Description:</p>
-                    <input class='h-2 text-sm border-black bg-transparent w-full pl-0' value={colorDescription()} onChange={(e) => setColorDescription(e.target.value)} />
-
-                </div>
-                <div class='flex w-full'>
-                    <button class='w-full font-light uppercase bg-red-300 rounded-sm' onClick={() => {
-                        setShowModal(false)
-                    }}>cancel</button>
-                    <button class='w-full font-light uppercase bg-blue-200 rounded-sm' onClick={() => {
-                        mutate((p) => [...p, { code: brandCode(), description: colorDescription(), brand: brand(), color: hex() }])
-
-                        axios.post('http://127.0.0.1:5000/add_thread', {
-                            brand: brand(),
-                            code: brandCode() ?? null,
-                            description: colorDescription(),
-                            hex: hex()
-                        })
-                            .then(function (response) {
-                            })
-                            .catch(function (error) {
-                                console.log(error);
-                            })
-                        // setShowModal(false)
-                    }}>save</button>
-                </div>
-
-            </div>}
-
-            <div class='flex flex-row gap-3 items-center'>
-                <For each={data()}>{(threadEntry: any) => {
-                    console.log(threadEntry)
-                    return <ColorSwatch brand={'dmc'} color={threadEntry.color} description={threadEntry.description} code={threadEntry.code} />
-                }}
-                </For>
+        <div class='flex flex-col justify-evenly items-start p-2'>
+            <button class="self-end uppercase font-light bg-orange-300 px-4 mb-3 rounded-md" onClick={() => setShowAddThreadForm(!showAddThreadForm())}>{showAddThreadForm() ? 'CLOSE' : 'Add Thread'}</button>
+            <div class={`flex flex-row self-center justify-between items-center px-2 rounded-full w-11/12 md:w-7/12 bg-[#F6F6F6] text-black placeholder:font-light placeholder:text-[#BDBDBD]`}>
+                <input
+                    placeholder='Search'
+                    value={searchField()}
+                    onInput={(e) => {
+                        setSearchField(e.target.value)
+                    }}
+                    class='bg-transparent w-full border-transparent font-light focus:border-transparent focus:ring-0'
+                />
             </div>
+            {showAddThreadForm() && <AddThreadInput mutate={mutate} />}
         </div>
-    </Show>
+        <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
+            <For each={data()?.filter((x: ColorSwatchType) =>
+                x.description.toLowerCase().includes(searchField()))
+            }>{(threadEntry: ColorSwatchType) =>
+                <div onClick={() => setShowEditSwatchModal(true)}>
+                    <ColorSwatch brand={threadEntry.brand} color={threadEntry.color} description={threadEntry.description} code={threadEntry.code} variant={threadEntry.variant} />
+                    {showEditSwatchModal() && <ColorSwatchModal thread={threadEntry} onClose={() => setShowEditSwatchModal(false)} />}
+                </div>}
+            </For>
+        </div>
+
+        {/*         <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
+            <For each={data()?.filter((x: ColorSwatchType) =>
+                x.description.toLowerCase().includes(searchField()) && x.brand === 'anchor')
+            }>{(threadEntry: ColorSwatchType) => <ColorSwatch brand={threadEntry.brand} color={threadEntry.color} description={threadEntry.description} code={threadEntry.code} variant={threadEntry.variant} />
+                }
+            </For>
+        </div>
+        <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
+            <For each={data()?.filter((x: ColorSwatchType) =>
+                x.description.toLowerCase().includes(searchField()) && x.brand === 'weeksDyeWorks')
+            }>{(threadEntry: ColorSwatchType) => <ColorSwatch brand={threadEntry.brand} color={threadEntry.color} description={threadEntry.description} code={threadEntry.code} variant={threadEntry.variant} />
+                }
+            </For>
+        </div>
+        <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
+            <For each={data()?.filter((x: ColorSwatchType) =>
+                x.description.toLowerCase().includes(searchField()) && x.brand === 'classicColorworks')
+            }>{(threadEntry: ColorSwatchType) => <ColorSwatch brand={threadEntry.brand} color={threadEntry.color} description={threadEntry.description} code={threadEntry.code} variant={threadEntry.variant} />
+                }
+            </For>
+        </div> */}
+        {false && <div class="fixed bottom-3 left-1/4 w-54 bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert">
+            <div class="flex">
+                <div class="py-1"><svg class="fill-current h-6 w-6 text-teal-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" /></svg></div>
+                <div>
+                    <p class="font-bold">Successfully added thread</p>
+                    <p class="text-sm">Make sure you know how these changes affect you.</p>
+                </div>
+            </div>
+        </div>}
+    </Show >
 }

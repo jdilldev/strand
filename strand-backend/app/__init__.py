@@ -3,13 +3,11 @@ from dotenv import load_dotenv
 import os
 from flask_cors import CORS, cross_origin
 
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import create_engine, select, text
 from . import models
 from . import strand
 from sqlalchemy.orm import Session
-
-DEFAULT_ROUTE_LEADERBOARD = "index"
-DEFAULT_ROUTE_PLAYER = "player"
 
 app = Flask(__name__)
 CORS(app)
@@ -23,36 +21,71 @@ dmc = models.DmcThread
 
 """ with Session(engine) as session: """
 
-@app.route("/get_dmc", methods=['GET'])
+@app.route("/dmc", methods=['GET'])
 def dmc_all():
     with Session(engine) as session:
        m = strand.get_dmc(session)
 
     response = jsonify(m)
-    """ response.headers.add('Access-Control-Allow-Origin', '*') """
+    return response
+
+@app.route("/anchor", methods=['GET'])
+def anchor_all():
+    with Session(engine) as session:
+       m = strand.get_anchor(session)
+
+    response = jsonify(m)
 
     return response
         
 
+@app.route("/weeks_dye_works", methods=['GET'])
+def weeks_dye_works_all():
+    with Session(engine) as session:
+       m = strand.get_weeks_dye_works(session)
+
+    response = jsonify(m)
+
+    return response
+        
+@app.route("/classic_colorworks", methods=['GET'])
+def classic_colorworks_all():
+    with Session(engine) as session:
+       m = strand.get_classic_colorworks(session)
+
+    response = jsonify(m)
+
+    return response
+
 @app.route("/add_thread", methods=['POST'])
 def index():
+
+    print(request.json)
     with Session(engine) as session:
         brand = request.json['brand']
-        code = request.json['code']
-        description =  request.json['description']
+        dmc_code = request.json['dmcCode']
+        dmc_description =  request.json['dmcDescription']
+        anchor_code = request.json['anchorCode']
+        anchor_description =  request.json['anchorDescription']
+        weeks_dye_works_description = request.json['weeksDyeWorksDescription']
+        classic_colorworks_description = request.json['classicColorworksDescription']
         color =  request.json['hex']
+        variant = request.json['variant']
 
         match brand:
             case 'dmc':
-                id = strand.add_dmc_thread(session=session, code=code, description=description, color=color)
+                id = strand.add_dmc_thread(session=session, description=dmc_description, color=color, variant=variant, dmc_code=dmc_code, anchor_code=anchor_code, weeks_dye_works_description=weeks_dye_works_description, classic_colorworks_description=classic_colorworks_description)
+                anchor_code and strand.add_anchor_thread(session=session, color=color, anchor_code=anchor_code, anchor_description=anchor_description, dmc_code=dmc_code)
+                weeks_dye_works_description and strand.add_weeks_dye_works_thread(session=session, color=color, description=weeks_dye_works_description, dmc_code=dmc_code)
+                classic_colorworks_description and strand.add_classic_colorworks_thread(session=session, color=color, description=classic_colorworks_description, dmc_code=dmc_code)
             case 'anchor':
-                strand.add_anchor_thread(description, color, anchor_code=code)
-            case 'weeks_dye_works':
-                strand.add_weeks_dye_works_thread(description, color)
-            case 'classic_colorworks':
-                strand.add_classic_colorworks_thread(description, color)
+                id = strand.add_anchor_thread(session, anchor_code,color, anchor_description, dmc_code)
+            case 'weeksDyeWorks':
+                id = strand.add_weeks_dye_works_thread(session,weeks_dye_works_description, color, dmc_code=dmc_code)
+            case 'classicColorworks':
+                id = strand.add_classic_colorworks_thread(session,classic_colorworks_description, color, dmc_code=dmc_code)
         
-    return jsonify(id)
+    return jsonify('m')
 
 
 @app.route('/dmc/<dmc_code>', methods=['POST','GET'])

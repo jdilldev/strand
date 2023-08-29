@@ -6,7 +6,11 @@
 body {
 	height: 100vh;
 	font-family: "Inter";
+	position: relative;
+	overflow-x: hidden;
 	color: #666666;
+	width: 100%;
+	width: 100vw;
 }
 code {
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

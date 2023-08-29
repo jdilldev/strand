@@ -19,7 +19,7 @@ export const TextField = (props: TextFieldType) => {
 			onChange={(e) => {
 				setValue(e.target.value)
 			}}
-			class='bg-transparent w-full border-transparent focus:border-transparent focus:ring-0'
+			class='bg-transparent w-full border-transparent font-light focus:border-transparent focus:ring-0'
 			placeholder={label}
 			type={props.inputType as string}
 		/>
