@@ -12,10 +12,10 @@ import { Dashboard } from './Components/Dashboard';
 const App: Component = () => (
   <Routes>
     <Route path="/strand/auth" component={Auth} />
-    <Route path="/" component={Dashboard}>
+    <Route path="/" component={RouteGuard}>
       <Route path="/strand/home" component={Dashboard} />
     </Route>
-    <Route path="*" component={() => <div>Page Not found!!!</div>} />
+    <Route path="*" component={Dashboard} />
   </Routes>
 );
 
