@@ -7,7 +7,7 @@ import axios from "axios"
 import { ColorSwatchModal } from "./ColorSwatchModal"
 
 const DEV = 'http://127.0.0.1:5000'
-const PROD = 'http://jdilldev.pythonanywhere.com'
+const PROD = 'https://jdilldev.pythonanywhere.com'
 // fiber type'
 export const Dashboard = () => {
     const fetchDmcThreads = async () => {

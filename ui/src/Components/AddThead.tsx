@@ -2,6 +2,9 @@ import axios, { AxiosError } from "axios"
 import { createSignal } from "solid-js"
 import { BrandMapping, ColorSwatchType, ThreadBrandType, ThreadVariantType } from "../../Types"
 
+const DEV = 'http://127.0.0.1:5000'
+const PROD = 'https://jdilldev.pythonanywhere.com'
+
 const AddThreadInput = ({ mutate }: { mutate: any }) => {
     const [variant, setVariant] = createSignal<ThreadVariantType>('6-strand')
     const [hex, setHex] = createSignal('#')
@@ -137,7 +140,7 @@ const AddThreadInput = ({ mutate }: { mutate: any }) => {
             </select>
         </div>}
         <button disabled={!isValid()} class='w-1/4 font-light uppercase bg-green-400 text-black rounded-sm mb-1 disabled:opacity-60 disabled:bg-red-300' onClick={() => {
-            axios.post('http://127.0.0.1:5000/add_thread', {
+            axios.post(`${PROD}/add_thread`, {
                 brand: brand(),
                 dmcCode: dmcCode() ? Number.parseInt(dmcCode()!) : null,
                 dmcDescription: dmcDescription(),
