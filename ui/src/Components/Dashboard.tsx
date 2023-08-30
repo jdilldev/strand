@@ -51,7 +51,7 @@ export const Dashboard = () => {
             }>{(threadEntry: ColorSwatchType) =>
                 <div onClick={() => setShowEditSwatchModal(true)}>
                     <ColorSwatch brand={threadEntry.brand} color={threadEntry.color} description={threadEntry.description} code={threadEntry.code} variant={threadEntry.variant} />
-                    {showEditSwatchModal() && <ColorSwatchModal thread={threadEntry} onClose={() => setShowEditSwatchModal(false)} />}
+                    {false && <ColorSwatchModal thread={threadEntry} onClose={() => setShowEditSwatchModal(false)} />}
                 </div>}
             </For>
         </div>
