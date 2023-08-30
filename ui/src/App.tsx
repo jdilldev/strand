@@ -11,9 +11,9 @@ import { Dashboard } from './Components/Dashboard';
 
 const App: Component = () => (
   <Routes>
-    <Route path="/auth" component={Auth} />
+    <Route path="/strand/auth" component={Auth} />
     <Route path="/" component={RouteGuard}>
-      <Route path="/home" component={Dashboard} />
+      <Route path="/strand/home" component={Dashboard} />
     </Route>
     <Route path="*" component={() => <div>Page Not found!!!</div>} />
   </Routes>
