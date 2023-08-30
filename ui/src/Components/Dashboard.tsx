@@ -6,14 +6,16 @@ import { ColorSwatchType } from "../../Types"
 import axios from "axios"
 import { ColorSwatchModal } from "./ColorSwatchModal"
 
-// fiber type
+const DEV = 'http://127.0.0.1:5000'
+const PROD = 'http://jdilldev.pythonanywhere.com'
+// fiber type'
 export const Dashboard = () => {
     const fetchDmcThreads = async () => {
         const r = (await axios.all([
-            axios.get(`http://127.0.0.1:5000/dmc`),
-            axios.get(`http://127.0.0.1:5000/anchor`),
-            axios.get(`http://127.0.0.1:5000/weeks_dye_works`),
-            axios.get(`http://127.0.0.1:5000/classic_colorworks`),
+            axios.get(`${PROD}/dmc`),
+            axios.get(`${PROD}/anchor`),
+            axios.get(`${PROD}/weeks_dye_works`),
+            axios.get(`${PROD}/classic_colorworks`),
         ]).then(axios.spread((dmc, anchor, weeksColorWorks, classicColorworks) => {
             return { data: [...dmc.data, ...anchor.data, ...weeksColorWorks.data, ...classicColorworks.data] }
 
