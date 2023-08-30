@@ -25,7 +25,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: https://jdilldev.github.io/strand.github.io
+      url: https://jdilldev.github.io/strand
     runs-on: ubuntu-latest
     defaults:
       run:
