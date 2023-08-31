@@ -32,12 +32,12 @@ def add_dmc_thread(session, dmc_code, color, description, anchor_code=None, week
     print('anchor ',anchor_code)
     score = models.DmcThread(
         dmc_code = dmc_code,
+        color = color,
+        description = description,
         anchor_code=anchor_code,
         classic_colorworks_description=classic_colorworks_description,
         weeks_dye_works_description=weeks_dye_works_description,
-        description = description,
         variant = variant,
-        color = color,
     )
     session.add(score)
     session.flush()

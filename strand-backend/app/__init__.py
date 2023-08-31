@@ -87,13 +87,13 @@ def index():
         
     return jsonify('m')
 
-
+""" 
 @app.route('/dmc/<dmc_code>', methods=['POST','GET'])
 def dmc_thread(dmc_code):
      with Session(engine) as session:
         data = request.data
         strand.add_dmc_thread(session)
-        return jsonify(dmc_code)
+        return jsonify(dmc_code) """
 
 """   meta = MetaData()
 
