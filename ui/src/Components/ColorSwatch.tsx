@@ -1,5 +1,6 @@
 import { JSXElement, createSignal } from "solid-js"
 import { BrandMapping, ColorSwatchType, ThreadBrandType, ThreadVariantType } from "../../Types"
+import { DmcThread, IThread } from "../../Models"
 
 
 const variantTagStyle = (variant: ThreadVariantType) => {
@@ -27,6 +28,7 @@ const variantTagStyle = (variant: ThreadVariantType) => {
 
 
 export const ColorSwatch = ({ color, description, code, brand, variant }: ColorSwatchType) => {
+    console.log(variant)
 
     return <div class='flex flex-col items-start gap-1'>
         <div
@@ -35,7 +37,7 @@ export const ColorSwatch = ({ color, description, code, brand, variant }: ColorS
         />
         {true && <span class={`text-xs font-medium inline-block py-.5 px-1.5 uppercase rounded last:mr-0 mr-0.5 ${variantTagStyle(variant ?? '6-strand')}`}>{variant ?? '6-strand'}</span>}
         <div class='flex flex-col'>
-            <span class={`font-semibold text-xs w-20`}>{`${BrandMapping.get(brand)} ${code ?? ''}`}</span>
+            <span class={`font-semibold text-xs w-20`}>{`${BrandMapping.get(brand)} ${code || ''}`}</span>
             <span class='font-light text-xs w-20'>{description}</span>
         </div>
     </div>

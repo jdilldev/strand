@@ -8,14 +8,14 @@ import { ColorSwatchModal } from "./ColorSwatchModal"
 
 const DEV = 'http://127.0.0.1:5000'
 const PROD = 'https://jdilldev.pythonanywhere.com'
-// fiber type'
+
 export const Dashboard = () => {
     const fetchDmcThreads = async () => {
         const r = (await axios.all([
-            axios.get(`${PROD}/dmc`),
-            axios.get(`${PROD}/anchor`),
-            axios.get(`${PROD}/weeks_dye_works`),
-            axios.get(`${PROD}/classic_colorworks`),
+            axios.get(`${DEV}/dmc`),
+            axios.get(`${DEV}/anchor`),
+            axios.get(`${DEV}/weeks_dye_works`),
+            axios.get(`${DEV}/classic_colorworks`),
         ]).then(axios.spread((dmc, anchor, weeksColorWorks, classicColorworks) => {
             return { data: [...dmc.data, ...anchor.data, ...weeksColorWorks.data, ...classicColorworks.data] }
 
@@ -25,7 +25,7 @@ export const Dashboard = () => {
 
     const [data, { mutate }] = createResource(fetchDmcThreads);
     const [showAddThreadForm, setShowAddThreadForm] = createSignal(false)
-    const [showEditSwatchModal, setShowEditSwatchModal] = createSignal(true)
+    const [showEditSwatchModal, setShowEditSwatchModal] = createSignal(false)
     const [searchField, setSearchField] = createSignal('')
 
     //const filtered = data().filter((d: ColorSwatchType) => d.brand == 'anchor')
@@ -43,15 +43,16 @@ export const Dashboard = () => {
                     class='bg-transparent w-full border-transparent font-light focus:border-transparent focus:ring-0'
                 />
             </div>
-            {showAddThreadForm() && <AddThreadInput mutate={mutate} />}
+            {showAddThreadForm() && <AddThreadInput mutate={mutate} onClose={() => setShowAddThreadForm(false)} />}
         </div>
         <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
             <For each={data()?.filter((x: ColorSwatchType) =>
-                x.description.toLowerCase().includes(searchField()))
+                x.description.toLowerCase().includes(searchField()) || x.code?.toString().includes(searchField()))
+
             }>{(threadEntry: ColorSwatchType) =>
                 <div onClick={() => setShowEditSwatchModal(true)}>
                     <ColorSwatch brand={threadEntry.brand} color={threadEntry.color} description={threadEntry.description} code={threadEntry.code} variant={threadEntry.variant} />
-                    {false && <ColorSwatchModal thread={threadEntry} onClose={() => setShowEditSwatchModal(false)} />}
+                    {showEditSwatchModal() && <ColorSwatchModal thread={threadEntry} onClose={() => setShowEditSwatchModal(false)} />}
                 </div>}
             </For>
         </div>
