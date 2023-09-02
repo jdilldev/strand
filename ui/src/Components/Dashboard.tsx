@@ -47,7 +47,10 @@ export const Dashboard = () => {
         </div>
         <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
             <For each={data()?.filter((x: ColorSwatchType) =>
-                x.description.toLowerCase().includes(searchField()) || x.code?.toString().includes(searchField()))
+                x.description.toLowerCase().includes(searchField()) || x.code?.toString().includes(searchField())).sort((a, b) => {
+                    console.log(a.brand === 'dmc')
+                    return a.brand === 'dmc' ? -1 : b.brand === 'dmc' ? 1 : (a.brand as string).localeCompare(b.brand as string)
+                })
 
             }>{(threadEntry: ColorSwatchType) =>
                 <div onClick={() => setShowEditSwatchModal(true)}>

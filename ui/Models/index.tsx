@@ -91,13 +91,13 @@ export class DmcThread implements IThread {
     addThread = async () => {
         await axios.post(`${DEV}/add_thread`, {
             brand: 'dmc',
-            dmcCode: this.dmcCode,
-            dmcDescription: this.description,
-            anchorCode: this.anchorCodes,
-            weeksDyeWorksDescriptions: this.weeksDyeWorksDescriptions,
-            classicColorworksDescription: [],
+            dmc_code: this.dmcCode,
             hex: this.color,
-            variant: this.variant
+            variant: this.variant,
+            description: this.description,
+            anchor_codes: this.anchorCodes,
+            weeks_dye_works_descriptions: this.weeksDyeWorksDescriptions,
+            classic_colorworks_description: this.classicColorWorksThread,
         })
     }
 
@@ -123,13 +123,12 @@ export class AnchorThread implements IThread {
     }
 
     addThread = async () => {
-        await axios.post(`${PROD}/add_thread`, {
+        await axios.post(`${DEV}/add_thread`, {
             brand: this.brand,
-            dmcCode: this.dmcCode,
-            dmcDescription: this.description,
-            weeksDyeWorksDescription: [],
-            classicColorworksDescription: [],
             hex: this.color,
+            anchor_code: this.anchorCode,
+            description: this.description,
+            dmc_code: this.dmcCode,
         })
     }
 
@@ -188,13 +187,11 @@ export class WeeksDyeWorksThread implements IThread {
     }
 
     addThread = async () => {
-        await axios.post(`${PROD}/add_thread`, {
+        await axios.post(`${DEV}/add_thread`, {
             brand: this.brand,
-            dmcCode: this.dmcCode,
-            dmcDescription: this.description,
-            weeksDyeWorksDescription: [],
-            classicColorworksDescription: [],
             hex: this.color,
+            description: this.description,
+            dmc_code: this.dmcCode,
         })
     }
 
@@ -229,22 +226,23 @@ export class WeeksDyeWorksThread implements IThread {
 
 export class ClassicColorworksThread implements IThread {
     brand: ThreadBrandType = "classicColorworks";
-    description: string = '';
     color: string = '#ffffff'
+    description: string = '';
     dmcCodes?: number[]
     notes?: string
 
-    constructor(color: string, description: string, dmcCode?: number[]) {
+    constructor(color: string, description: string, dmcCodes?: number[]) {
         this.brand = 'classicColorworks'
         this.color = color
         this.description = description
-        this.dmcCodes = dmcCode
+        this.dmcCodes = dmcCodes
     }
 
     addThread = async () => {
         await axios.post(`${DEV}/add_thread`, {
             brand: 'classicColorworks',
             dmc_codes: this.dmcCodes,
+            description: this.description,
             hex: this.color,
         })
     }

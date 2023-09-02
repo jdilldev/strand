@@ -114,7 +114,22 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                         <input checked={isBrandSelected('anchor')} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('anchor')} />)}
                     <p class='hover:text-blue-400' onClick={() => handleBrandChange('anchor')}>Anchor</p>
                     <div class='flex flex-col gap-1'>
-                        {(brand() === 'anchor' || brand() === 'dmc') && anchorCodes().map((anchorCode, i) => {
+                        {brand() === 'anchor' && <div class='flex flex-row gap-2 items-center'>
+                            <input
+                                type='text'
+                                value={Number.parseInt(anchorCode()) === 0 ? '' : anchorCode()}
+                                class="rounded-md h-6 w-16 text-sm pl-1 placeholder:text-gray-300" placeholder="#"
+                                onChange={(e) => {
+                                    setAnchorCode(e.target.value)
+                                }} />
+                            <input
+                                type='text'
+                                value={anchorDescription()}
+                                class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300" placeholder="Anchor description"
+                                onInput={(e) => setAnchorDescription(e.target.value)}
+                            />
+                        </div>}
+                        {brand() === 'dmc' && anchorCodes().map((anchorCode, i) => {
                             return <div class='flex flex-row gap-2 items-center'>
                                 <input
                                     type='text'
@@ -125,12 +140,6 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                                         tmp[i] = Number.parseInt(e.target.value)
                                         setAnchorCodes(tmp)
                                     }} />
-                                {brand() === 'anchor' && <input
-                                    type='text'
-                                    value={anchorDescription()}
-                                    class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300" placeholder="Anchor description"
-                                    onInput={(e) => setAnchorDescription(e.target.value)}
-                                />}
                                 {(brand() === 'dmc') && <>
                                     {i === anchorCodes().length - 1 && <FiPlusCircle
                                         class='stroke-green-600 hover:opacity-60'
