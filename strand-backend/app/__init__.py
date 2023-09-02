@@ -4,7 +4,7 @@ import os
 from flask_cors import CORS, cross_origin
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import create_engine, select, text
+from sqlalchemy import create_engine, select, text, insert
 from . import models
 from . import strand
 from sqlalchemy.orm import Session
@@ -18,6 +18,19 @@ engine = create_engine(os.getenv('DB_URI'))
 engine.connect()
 
 dmc = models.DmcThread
+
+#session.query(Clients).filter(Clients.id == client_id_list).update({'status': status})
+#session.commit()
+
+#session.execute(update(stuff_table, values={stuff_table.c.foo: stuff_table.c.foo + 1}))
+#session.commit()
+
+#q = dbsession.query(Toner)
+#q = q.filter(Toner.toner_id==1)
+#record = q.one()
+#record.toner_color = 'Azure Radiance'
+
+#dbsession.commit()
 
 """ with Session(engine) as session: """
 
@@ -59,7 +72,6 @@ def classic_colorworks_all():
 
 @app.route("/add_thread", methods=['POST'])
 def index():
-
     print(request.json)
     with Session(engine) as session:
         brand = request.json['brand']

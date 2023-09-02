@@ -47,6 +47,7 @@ def add_dmc_thread(session, dmc_code, color, description, anchor_code=None, week
 def add_anchor_thread(session, anchor_code, color, anchor_description,dmc_code=None):
     print('adding anchor thread')
     score = models.AnchorThread(
+        anchor_code=anchor_code,
         dmc_code = dmc_code,
         color = color,
         anchor_code =  anchor_code,
@@ -61,15 +62,15 @@ def add_weeks_dye_works_thread(session, description, color, dmc_code=None):
     score = models.WeeksDyeWorksThread(
         dmc_code = dmc_code,
         color = color,
-        weeks_dye_works_description = description,
+        description = description,
     )
     session.add(score)
     session.commit()
 
-def add_classic_colorworks_thread(session, description, color, dmc_code=None):
+def add_classic_colorworks_thread(session, description, color, dmc_codes=None):
     print('adding classic colorworks thread')
     score = models.ClassicColorworksThread(
-        dmc_code = dmc_code,
+        dmc_codes = dmc_codes,
         classic_colorworks_description = description,
         color=color
     )
