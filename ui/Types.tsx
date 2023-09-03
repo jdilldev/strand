@@ -2,11 +2,11 @@ import { JSX } from "solid-js/jsx-runtime";
 
 
 export type ColorSwatchType = {
+    brand: ThreadBrandType
     color: string
     description: string
-    code?: number
     variant?: ThreadVariantType
-    brand: ThreadBrandType
+    code?: number
 }
 
 export type ThreadBrandType = 'dmc' | 'anchor' | 'weeksDyeWorks' | 'classicColorworks'

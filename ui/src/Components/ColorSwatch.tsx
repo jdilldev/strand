@@ -1,6 +1,6 @@
 import { JSXElement, createSignal } from "solid-js"
 import { BrandMapping, ColorSwatchType, ThreadBrandType, ThreadVariantType } from "../../Types"
-import { DmcThread, IThread } from "../../Models"
+import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread } from "../../Models"
 
 
 const variantTagStyle = (variant: ThreadVariantType) => {
@@ -26,19 +26,16 @@ const variantTagStyle = (variant: ThreadVariantType) => {
 
 }
 
-
-export const ColorSwatch = ({ color, description, code, brand, variant }: ColorSwatchType) => {
-    console.log(variant)
-
+export const ColorSwatch = ({ thread }: { thread: IThread }) => {
     return <div class='flex flex-col items-start gap-1'>
         <div
             class="w-20 h-20 rounded-md hover:-skew-y-3 hover:-skew-x-3"
-            style={{ background: color }}
+            style={{ background: thread.getColor() }}
         />
-        {true && <span class={`text-xs font-medium inline-block py-.5 px-1.5 uppercase rounded last:mr-0 mr-0.5 ${variantTagStyle(variant ?? '6-strand')}`}>{variant ?? '6-strand'}</span>}
+        <span class={`text-xs font-medium inline-block py-.5 px-1.5 uppercase rounded last:mr-0 mr-0.5 ${variantTagStyle(thread.getVariant())}`}>{thread.getVariant()}</span>
         <div class='flex flex-col'>
-            <span class={`font-semibold text-xs w-20`}>{`${BrandMapping.get(brand)} ${code || ''}`}</span>
-            <span class='font-light text-xs w-20'>{description}</span>
+            <span class={`font-semibold text-xs w-20`}>{`${BrandMapping.get(thread.getBrand())} ${thread.getCode() ?? ''}`}</span>
+            <span class='font-light text-xs w-20'>{thread.getDescription()}</span>
         </div>
     </div>
 }

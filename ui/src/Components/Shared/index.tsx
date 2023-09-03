@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { InputType, ThreadBrandType } from "../../../Types";
-
+import { IoCloseOutline } from 'solid-icons/io'
 type TextFieldType = {
 	label: string;
 	inputType: InputType;
@@ -8,6 +8,55 @@ type TextFieldType = {
 	classnames?: string;
 	togglePassword?: any
 };
+
+export const TagInput = ({ tags }: { tags: string[] }) => {
+	const [newTag, setNewTag] = createSignal('')
+	const [updatedTags, setUpdatedTags] = createSignal<string[]>(tags)
+
+	return <div class='flex flex-col gap-1 mb-2 items-center'>
+		<div class='flex flex-row gap-1 w-[300px] flex-wrap self-start px-2' >
+			{updatedTags().map((tag) =>
+				<p
+					class='flex flex-row gap-1 items-center font-thin text-sm text-white bg-purple-700 px-2 py-.5 rounded-full w-fit'
+					onClick={() => {
+						const tmp = [...updatedTags()]
+
+						tmp.filter(tmpTag => tag === tmpTag)
+						setUpdatedTags(tmp)
+					}}
+				>
+					{tag}
+					<span>
+						<IoCloseOutline
+							class='w-3 h-3 hover:opacity-60'
+							onClick={() => {
+								const tmp = updatedTags().filter((tmpTag) => tmpTag !== tag)
+								setUpdatedTags(tmp)
+							}}
+						/>
+					</span>
+				</p>)}
+		</div>
+		<input
+			type='text'
+			placeholder="Enter keyword"
+			class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300"
+			value={newTag()}
+			onInput={e => setNewTag(e.target.value)}
+			onKeyPress={(e) => {
+				if (e.key === 'Enter') {
+					if (!updatedTags().includes(newTag()) && newTag() !== '') {
+						setUpdatedTags([...updatedTags(), newTag()])
+						setNewTag('')
+					}
+					else
+						alert('Keyword already exists!')
+				}
+			}}
+		/>
+		<p class='text-xs text-purple-700'>(press enter to save)</p>
+	</div>
+}
 
 export const TextField = (props: TextFieldType) => {
 	const [value, setValue] = createSignal('');

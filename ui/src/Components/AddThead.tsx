@@ -1,16 +1,17 @@
-import axios, { AxiosError } from "axios"
-import { createSignal } from "solid-js"
-import { BrandMapping, ColorSwatchType, ThreadBrandType, ThreadVariantType } from "../../Types"
-import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread } from "../../Models"
+import axios from "axios"
+import { createEffect, createResource, createSignal, } from "solid-js"
+import { ThreadBrandType, ThreadVariantType } from "../../Types"
+import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread, getThread } from "../../Models"
 import { FiPlusCircle } from 'solid-icons/fi'
 import { AiOutlineDelete } from 'solid-icons/ai'
+import { IoCloseOutline } from 'solid-icons/io'
 
 const DEV = 'http://127.0.0.1:5000'
 const PROD = 'https://jdilldev.pythonanywhere.com'
 
-const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void }) => {
-    const [variant, setVariant] = createSignal<ThreadVariantType>('6-strand')
-    const [hex, setHex] = createSignal('')
+const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onClose }: { defaultBrand: ThreadBrandType, thread?: IThread, type: 'edit' | 'add', mutate: any, onClose: () => void }) => {
+    const [variant, setVariant] = createSignal<ThreadVariantType>(currentThread ? currentThread.getVariant() : '6-strand')
+    const [hex, setHex] = createSignal(currentThread ? currentThread.getColor() : '')
     const [dmcCode, setDmcCode] = createSignal<string>('')
     const [dmcCodes, setDmcCodes] = createSignal<number[]>([0])
     const [dmcDescription, setDmcDescription] = createSignal('')
@@ -20,12 +21,45 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
     const [weeksDyeWorksDescriptions, setWeeksDyeWorksDescriptions] = createSignal<string[]>([''])
     const [weeksDyeWorksDescription, setWeeksDyeWorksDescription] = createSignal('')
     const [classicColorworksDescription, setClassicColorworksDescription] = createSignal('')
-
+    const [newKeyword, setNewKeyword] = createSignal('')
+    const [keywords, setKeywords] = createSignal<string[]>(currentThread ? currentThread.getKeywords() : [])
     const [mappings, setMappings] = createSignal<ThreadBrandType[]>([])
     const [showSuccess, setShowSuccess] = createSignal(true)
 
-    const [brand, setBrand] = createSignal<ThreadBrandType>('dmc')
+    const [brand, setBrand] = createSignal<ThreadBrandType>(currentThread ? currentThread.getBrand() : defaultBrand)
 
+    if (currentThread) {
+        let cast;
+        switch (currentThread.getBrand()) {
+            case 'dmc':
+                cast = currentThread as DmcThread
+                setDmcCode(cast.getCode() + '')
+                setDmcDescription(cast.getDescription())
+                setAnchorCodes(cast.getAnchorCodes())
+                setWeeksDyeWorksDescriptions(cast.getWeeksDyeWorks())
+                setClassicColorworksDescription(cast.getClassicColorWorks())
+                break;
+            case 'anchor':
+                cast = currentThread as AnchorThread
+
+                setDmcCode('' + (cast.getDmcCode() || 0))
+                setAnchorCode(cast.getCode() + '')
+                setAnchorDescription(cast.getDescription())
+                break;
+            case 'weeksDyeWorks':
+                cast = currentThread as WeeksDyeWorksThread
+
+                setDmcCode('' + (cast.getDmcCode() || 0))
+                setWeeksDyeWorksDescription(cast.getDescription())
+                break;
+            case 'classicColorworks':
+                cast = currentThread as ClassicColorworksThread
+
+                setDmcCodes(cast.getDmcCodes() || [])
+                setClassicColorworksDescription(cast.getDescription())
+                break;
+        }
+    }
 
     const handleBrandChange = (updatedBrand: ThreadBrandType) => {
         setBrand(updatedBrand)
@@ -43,6 +77,7 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
 
     const isBrandSelected = (selectedBrand: ThreadBrandType) => (mappings().includes(selectedBrand) || brand() === selectedBrand)
 
+
     const isValid = () => {
         let valid = false
 
@@ -50,29 +85,37 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
             valid = !!dmcCode() && !!dmcDescription()
         }
 
-        if (mappings().includes('anchor') || brand() === 'anchor') {
-            // valid = !!anchorCode() && !!anchorDescription()
+        if (brand() === 'anchor') {
+            valid = !!anchorCode() && !!anchorDescription()
         }
 
-        if (mappings().includes('weeksDyeWorks') || brand() === 'weeksDyeWorks')
+        if (brand() === 'weeksDyeWorks')
             valid = !!weeksDyeWorksDescription()
 
-        if (mappings().includes('classicColorworks') || brand() === 'classicColorworks')
+        if (brand() === 'classicColorworks' || mappings().includes('classicColorworks'))
             valid = !!classicColorworksDescription()
 
+        if (brand() === 'classicColorworks' && mappings().includes('dmc'))
+            valid = dmcCodes().every(code => !!code)
+
+        if (mappings().includes('anchor'))
+            valid = anchorCodes().every(code => !!code)
+
+        if (mappings().includes('weeksDyeWorks'))
+            valid = weeksDyeWorksDescriptions().every(desc => !!desc)
 
         return valid && !!hex() && hex().startsWith('#')
     }
 
     return <div class='z-10 fixed bg-white top-[100px] mb-3 flex flex-col items-center justify-center self-center rounded-md border-black border-2' >
         <div class='p-3 flex flex-col'>
-            {true && <p class='text-red-700 self-end' onClick={() => onClose()}>CLOSE</p>}
-            <p class="text-center text-lg font-light text-blue-500">Add to Thread Repository</p>
+            <p class='text-red-700 self-end' onClick={() => onClose()}>CLOSE</p>
+            <p class="text-center text-lg font-light text-blue-500">{`${type === 'edit' ? 'Edit' : 'Add'} to Thread Repository`}</p>
             <div class='flex flex-col mb-4 gap-4'>
                 <div class={`flex flex-row gap-2 ${dmcCodes().length === 1 ? 'items-center' : 'items-start'}`}>
                     {brand() === 'dmc' ? <input checked={true} type={'radio'} name='brand' />
-                        : <input checked={isBrandSelected('dmc')} type={'checkbox'} onChange={() => handleBrandCheck('dmc')} />}
-                    <p class="hover:text-blue-400" onClick={() => handleBrandChange('dmc')}>DMC</p>
+                        : <input checked={isBrandSelected('dmc') || dmcCode() !== '0' || (dmcCodes()[0] !== 0 && dmcCodes().length !== 0)} type={'checkbox'} onChange={() => handleBrandCheck('dmc')} />}
+                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('dmc')}>DMC</p>
                     {brand() === 'classicColorworks' ?
                         <div class='flex flex-col gap-1'>
                             {dmcCodes().map((thread, i) => <div class='flex flex-row gap-2'>
@@ -83,12 +126,17 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                                     value={thread === 0 ? '' : thread}
                                     onChange={(e) => {
                                         const tmp = [...dmcCodes()]
-                                        tmp[i] = Number.parseInt(e.target.value)
+                                        const val = Number.parseInt(e.target.value)
+                                        if (!tmp.includes(val))
+                                            tmp[i] = val
                                         setDmcCodes(tmp)
-                                    }} />
+                                    }}
+                                />
                                 {i === dmcCodes().length - 1 && <FiPlusCircle
                                     class='stroke-green-600'
-                                    onMouseDown={() => { setDmcCodes([...dmcCodes(), 0]) }} />}
+                                    onMouseDown={() => {
+                                        setDmcCodes([...dmcCodes(), 0])
+                                    }} />}
                                 {i > 0 && <AiOutlineDelete
                                     class='fill-red-600'
                                     onMouseDown={() => {
@@ -102,7 +150,7 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                             type='text'
                             class="rounded-md w-16 h-6  text-sm pl-1 placeholder:text-gray-300"
                             placeholder="#"
-                            value={dmcCode()}
+                            value={dmcCode() === '0' ? '' : dmcCode()}
                             onInput={(e) => {
                                 setDmcCode(e.target.value)
                             }} />
@@ -111,8 +159,8 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                 </div>
                 <div class={`flex flex-row gap-2 ${anchorCodes().length === 1 ? 'items-center' : 'items-start'}`}>
                     {(brand() === 'anchor' || brand() === 'dmc') && (brand() === 'anchor' ? <input checked={true} type={'radio'} name='brand' /> :
-                        <input checked={isBrandSelected('anchor')} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('anchor')} />)}
-                    <p class='hover:text-blue-400' onClick={() => handleBrandChange('anchor')}>Anchor</p>
+                        <input checked={isBrandSelected('anchor') || (anchorCodes()[0] !== 0 && anchorCodes().length !== 0)} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('anchor')} />)}
+                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('anchor')}>Anchor</p>
                     <div class='flex flex-col gap-1'>
                         {brand() === 'anchor' && <div class='flex flex-row gap-2 items-center'>
                             <input
@@ -159,14 +207,15 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                 </div>
                 <div class={`flex flex-row gap-2 ${weeksDyeWorksDescriptions().length > 0 ? 'items-start' : 'items-center'}`}>
                     {(brand() === 'weeksDyeWorks' || brand() === 'dmc') && (brand() === 'weeksDyeWorks' ? <input type={'radio'} name='brand' checked={true} /> :
-                        <input checked={isBrandSelected('weeksDyeWorks')} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('weeksDyeWorks')} />)}
-                    <p class='hover:text-blue-400' onClick={() => handleBrandChange('weeksDyeWorks')}>Weeks Dye Works</p>
+                        <input checked={isBrandSelected('weeksDyeWorks') || (weeksDyeWorksDescriptions()[0] !== '' && weeksDyeWorksDescriptions().length !== 0)} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('weeksDyeWorks')} />)}
+                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('weeksDyeWorks')}>Weeks Dye Works</p>
                     <div class='flex flex-col gap-1'>
                         {brand() === 'weeksDyeWorks' &&
                             <input
                                 type='text'
                                 value={weeksDyeWorksDescription()}
-                                class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300" placeholder="Weeks Dye Works description"
+                                class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300"
+                                placeholder="Weeks Dye Works description"
                                 onInput={(e) => setWeeksDyeWorksDescription(e.target.value)}
                             />}
                         {brand() === 'dmc' && weeksDyeWorksDescriptions().map((description, i) => {
@@ -196,8 +245,8 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                     </div>
                 </div>
                 <div class='flex flex-row gap-2 items-center'>
-                    {(brand() === 'classicColorworks' || brand() === 'dmc') && (brand() === 'classicColorworks' ? <input type={'radio'} name='brand' checked={true} /> : <input checked={isBrandSelected('classicColorworks')} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('classicColorworks')} />)}
-                    <p class='hover:text-blue-400' onClick={() => handleBrandChange('classicColorworks')}>Classic Colorworks</p>
+                    {(brand() === 'classicColorworks' || brand() === 'dmc') && (brand() === 'classicColorworks' ? <input type={'radio'} name='brand' checked={true} /> : <input checked={isBrandSelected('classicColorworks') || classicColorworksDescription() !== ''} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('classicColorworks')} />)}
+                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('classicColorworks')}>Classic Colorworks</p>
                     {(brand() === 'dmc' || brand() === 'classicColorworks') && <input type='text' value={classicColorworksDescription()} onInput={
                         (e) => {
                             setClassicColorworksDescription(e.target.value)
@@ -222,100 +271,157 @@ const AddThreadInput = ({ mutate, onClose }: { mutate: any, onClose: () => void 
                 <option>satin</option>
             </select>
         </div>}
-        <button
-            disabled={false}
-            class='w-1/4 font-light uppercase hover:bg-green-600 bg-green-400 text-black rounded-sm mb-1 disabled:opacity-60 disabled:bg-red-300'
-            onClick={() => {
-                let newDmcThread: DmcThread | null = null;
-                let newAnchorThread: AnchorThread | null = null;
-                let newWeeksDyeWorksThread: WeeksDyeWorksThread | null = null;
-                let newClassicColorworksThread: ClassicColorworksThread | null = null;
+        <div class='flex flex-col gap-1 mb-2 items-center'>
+            <div class='flex flex-row gap-1 w-[300px] flex-wrap self-start px-2' >
+                {keywords().map((tag) =>
+                    <p
+                        class='flex flex-row gap-1 items-center font-light text-xs text-white bg-purple-700 px-2 py-.5 rounded-full w-fit'
+                        onClick={() => {
+                            const tmp = [...keywords()]
 
-                const dmcCodeAsNumber = Number.parseInt(dmcCode()) ?? undefined
-                const requests: IThread[] = []
+                            tmp.filter(tmpTag => tag === tmpTag)
+                            setKeywords(tmp)
+                        }}
+                    >
+                        {tag}
+                        <span>
+                            <IoCloseOutline
+                                class='w-3 h-3 hover:opacity-60'
+                                onClick={() => {
+                                    const tmp = keywords().filter((tmpTag) => tmpTag !== tag)
+                                    setKeywords(tmp)
+                                }}
+                            />
+                        </span>
+                    </p>)}
+            </div>
+            <input
+                type='text'
+                placeholder="Enter keyword"
+                class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300"
+                value={newKeyword()}
+                onInput={e => setNewKeyword(e.target.value)}
+                onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                        if (!keywords().includes(newKeyword()) && newKeyword() !== '') {
+                            setKeywords([...keywords(), newKeyword()])
+                            setNewKeyword('')
+                        }
+                        else
+                            alert('Keyword already exists!')
+                    }
+                }}
+            />
+            <p class='text-xs text-purple-700'>(press enter to add keyword)</p>
+        </div>
+        <div class="flex flex-row justify-around w-3/4">
+            {type === 'edit' && <button
+                onClick={() => onClose()}
+                class='w-1/4 font-light uppercase hover:opacity-80 border-blue-400 border-2 text-blue-400 rounded-sm mb-1'>
+                cancel
+            </button>}
+            <button
+                disabled={!isValid()}
+                class='w-1/4 font-light uppercase hover:bg-green-600 bg-green-400 text-black rounded-sm mb-1 disabled:opacity-60 disabled:bg-red-300'
+                onClick={() => {
+                    let newDmcThread: DmcThread | null = null;
+                    let newAnchorThread: AnchorThread | null = null;
+                    let newWeeksDyeWorksThread: WeeksDyeWorksThread | null = null;
+                    let newClassicColorworksThread: ClassicColorworksThread | null = null;
 
-                if (brand() === 'dmc') {
-                    let anchorArr = anchorCodes()
-                    let weeksDyeWorksArr = weeksDyeWorksDescriptions()
-                    let classicColorworks = classicColorworksDescription()
+                    const dmcCodeAsNumber = Number.parseInt(dmcCode()) ?? undefined
+                    const requests: IThread[] = []
 
-                    if (Number.isNaN(dmcCodeAsNumber)) {
-                        alert('DMC code is not a valid number; please recheck')
+                    if (type === 'add') {
+                        if (brand() === 'dmc') {
+                            let anchorArr = anchorCodes()
+                            let weeksDyeWorksArr = weeksDyeWorksDescriptions()
+                            let classicColorworks = classicColorworksDescription()
+
+                            if (Number.isNaN(dmcCodeAsNumber)) {
+                                alert('DMC code is not a valid number; please recheck')
+                            }
+
+                            if (!mappings().includes('anchor'))
+                                anchorArr = []
+                            else {
+                                anchorArr.filter(code => code !== 0 && !Number.isNaN(code)).forEach(code => {
+                                    const threadToAdd = new AnchorThread(hex(), code, 'MUST ADD', keywords(), dmcCodeAsNumber!)
+                                    requests.push(threadToAdd)
+                                })
+                            }
+
+                            if (!mappings().includes('weeksDyeWorks'))
+                                weeksDyeWorksArr = []
+                            else {
+                                weeksDyeWorksArr.filter(desc => desc !== '').forEach(desc => {
+                                    const threadToAdd = new WeeksDyeWorksThread(hex(), desc, keywords(), dmcCodeAsNumber!)
+                                    requests.push(threadToAdd)
+                                })
+                            }
+
+                            if (!mappings().includes('classicColorworks'))
+                                classicColorworks = ''
+                            else {
+                                const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, keywords(), dmcCodes())
+                                requests.push(threadToAdd)
+                            }
+
+                            newDmcThread = new DmcThread(hex(), dmcCodeAsNumber, dmcDescription(), variant(), keywords(), anchorArr, weeksDyeWorksArr, classicColorworks)
+
+                            requests.push(newDmcThread)
+                        }
+
+                        if (brand() === 'anchor') {
+                            const anchorCodeAsNumber = Number.parseInt(anchorCode())
+
+                            newAnchorThread = new AnchorThread(hex(), anchorCodeAsNumber, anchorDescription(), keywords(), dmcCodeAsNumber)
+                            requests.push(newAnchorThread)
+
+                            if (dmcCodeAsNumber)
+                                requests.push(new DmcThread(hex(), dmcCodeAsNumber, 'MUST ADD', variant(), keywords(), [anchorCodeAsNumber]))
+                        }
+
+                        if (brand() === 'weeksDyeWorks') {
+
+                            newWeeksDyeWorksThread = new WeeksDyeWorksThread(hex(), weeksDyeWorksDescription(), keywords(), dmcCodeAsNumber)
+                            requests.push(newWeeksDyeWorksThread)
+
+                            if (dmcCodeAsNumber)
+                                requests.push(new DmcThread(hex(), dmcCodeAsNumber, 'MUST ADD', variant(), keywords(), [], [weeksDyeWorksDescription()]))
+                        }
+
+                        if (brand() === 'classicColorworks') {
+                            let dmcArr = dmcCodes()
+
+                            if (!mappings().includes('dmc'))
+                                dmcArr = []
+                            else {
+                                dmcArr.filter(code => code !== 0 && !Number.isNaN(code)).forEach(code => {
+
+                                    const threadToAdd = new DmcThread(hex(), code, 'MUST ADD', '6-strand', keywords(), [], [], classicColorworksDescription())
+                                    requests.push(threadToAdd)
+                                })
+                            }
+
+                            newClassicColorworksThread = new ClassicColorworksThread(hex(), classicColorworksDescription(), keywords(), dmcArr,)
+                            requests.push(newClassicColorworksThread)
+                        }
+
+                        (async () => {
+                            (await axios.all(requests.map(req => req.addThread())).then(axios.spread((res) => {
+                                mutate((p: any) => [...p, ...requests])
+
+                            })))
+                        })()
                     }
 
-                    if (!mappings().includes('anchor'))
-                        anchorArr = []
-                    else {
-                        anchorArr.forEach(code => {
-                            const threadToAdd = new AnchorThread(hex(), code, 'MUST ADD', dmcCodeAsNumber!)
-                            requests.push(threadToAdd)
-                        })
-                    }
+                    //edit action
 
-                    if (!mappings().includes('weeksDyeWorks'))
-                        weeksDyeWorksArr = []
-                    else {
-                        weeksDyeWorksArr.forEach(desc => {
-                            const threadToAdd = new WeeksDyeWorksThread(hex(), desc, dmcCodeAsNumber!)
-                            requests.push(threadToAdd)
-                        })
-                    }
 
-                    if (!mappings().includes('classicColorworks'))
-                        classicColorworks = ''
-                    else {
-                        const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, [dmcCodeAsNumber!])
-                        requests.push(threadToAdd)
-                    }
+                }}>save</button>
 
-                    newDmcThread = new DmcThread(hex(), dmcDescription(), dmcCodeAsNumber, variant(), anchorArr, weeksDyeWorksArr, classicColorworks)
-
-                    requests.push(newDmcThread)
-                }
-
-                if (brand() === 'anchor') {
-                    const anchorCodeAsNumber = Number.parseInt(anchorCode())
-
-                    newAnchorThread = new AnchorThread(hex(), anchorCodeAsNumber, anchorDescription(), dmcCodeAsNumber)
-                    requests.push(newAnchorThread)
-                }
-
-                if (brand() === 'weeksDyeWorks') {
-
-                    newWeeksDyeWorksThread = new WeeksDyeWorksThread(hex(), weeksDyeWorksDescription(), dmcCodeAsNumber)
-                    requests.push(newWeeksDyeWorksThread)
-                }
-
-                if (brand() === 'classicColorworks') {
-                    let dmcArr = dmcCodes()
-
-                    if (!mappings().includes('dmc'))
-                        dmcArr = []
-                    else {
-                        dmcArr.forEach(code => {
-                            console.log(code)
-                            const threadToAdd = new DmcThread(hex(), 'MUST ADD', code, '6-strand')
-                            requests.push(threadToAdd)
-                        })
-                    }
-
-                    newClassicColorworksThread = new ClassicColorworksThread(hex(), classicColorworksDescription(), dmcArr)
-                    requests.push(newClassicColorworksThread)
-                }
-
-                (async () => {
-
-                    (await axios.all(requests.map(req => req.addThread())).then(axios.spread((res) => {
-                        mutate((p: any) => [...p, ...requests])
-
-                    })))
-                })()
-                console.log(requests)
-            }}>save</button>
-        {/*  <div class='flex flex-row'>
-            <input type={'checkbox'} />
-            <p>Show success popup?</p>
-        </div> */}
+        </div>
     </div>
 }
 
