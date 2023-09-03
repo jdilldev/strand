@@ -70,49 +70,43 @@ def classic_colorworks_all():
 
     return response
 
+@app.route("/get_thread/<brand>/<id>", methods=['GET'])
+def getThread(brand, id):
+    with Session(engine) as session:
+       m = strand.get_thread(session,brand, id)
+
+    response = jsonify(m)
+
+    return response
+
+
 @app.route("/add_thread", methods=['POST'])
-def index():
+def addThread():
     print(request.json)
     with Session(engine) as session:
         brand = request.json['brand']
-        dmc_code = request.json['dmcCode']
-        dmc_description =  request.json['dmcDescription']
-        anchor_code = request.json['anchorCode']
-        anchor_description =  request.json['anchorDescription']
-        weeks_dye_works_description = request.json['weeksDyeWorksDescription']
-        classic_colorworks_description = request.json['classicColorworksDescription']
         color =  request.json['hex']
-        variant = request.json['variant']
-
+        description =  request.json['description']
+        variant = '6-strand'
+        keywords = request.json['keywords']
+            
         match brand:
             case 'dmc':
-                id = strand.add_dmc_thread(session=session, description=dmc_description, color=color, variant=variant, dmc_code=dmc_code, anchor_code=anchor_code, weeks_dye_works_description=weeks_dye_works_description, classic_colorworks_description=classic_colorworks_description)
-                anchor_code and strand.add_anchor_thread(session=session, color=color, anchor_code=anchor_code, anchor_description=anchor_description, dmc_code=dmc_code)
-                weeks_dye_works_description and strand.add_weeks_dye_works_thread(session=session, color=color, description=weeks_dye_works_description, dmc_code=dmc_code)
-                classic_colorworks_description and strand.add_classic_colorworks_thread(session=session, color=color, description=classic_colorworks_description, dmc_code=dmc_code)
+                dmc_code = request.json['dmc_code']
+                anchor_codes = request.json['anchor_codes'] if 'anchor_codes' in request.json else []
+                weeks_dye_works= request.json['weeks_dye_works'] if 'weeks_dye_works' in request.json else []
+                classic_colorworks= request.json['classic_colorworks'] if 'classic_colorworks' in request.json else None
+                strand.add_dmc_thread(session=session, color=color,dmc_code=dmc_code, description=description, variant=variant,  keywords=keywords, anchor_codes=anchor_codes, weeks_dye_works=weeks_dye_works, classic_colorworks=classic_colorworks)
             case 'anchor':
-                id = strand.add_anchor_thread(session, anchor_code,color, anchor_description, dmc_code)
+                dmc_code = request.json['dmc_code']
+                anchor_code = request.json['anchor_code']
+                strand.add_anchor_thread(session=session ,color=color, anchor_code=anchor_code, description=description,keywords=keywords, dmc_code=dmc_code)
             case 'weeksDyeWorks':
-                id = strand.add_weeks_dye_works_thread(session,weeks_dye_works_description, color, dmc_code=dmc_code)
+                dmc_code = request.json['dmc_code']
+                strand.add_weeks_dye_works_thread(session=session,description=description, color=color, keywords=keywords, dmc_code=dmc_code)
             case 'classicColorworks':
-                id = strand.add_classic_colorworks_thread(session,classic_colorworks_description, color, dmc_code=dmc_code)
-        
+                dmc_codes = request.json['dmc_codes']
+                strand.add_classic_colorworks_thread(session=session, color=color, description=description, keywords=keywords, dmc_codes=dmc_codes)
+    
     return jsonify('m')
 
-""" 
-@app.route('/dmc/<dmc_code>', methods=['POST','GET'])
-def dmc_thread(dmc_code):
-     with Session(engine) as session:
-        data = request.data
-        strand.add_dmc_thread(session)
-        return jsonify(dmc_code) """
-
-"""   meta = MetaData()
-
-    dmc = Table(
-    'dmc', meta, 
-    Column('dmc_code', Integer, primary_key = True, nullable=False), 
-    Column('description', String), 
-    Column('color', String),
-    )
-    meta.create_all(engine) """
