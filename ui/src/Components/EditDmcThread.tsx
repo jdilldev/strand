@@ -106,7 +106,7 @@ const EditDmcThread = ({ thread, mutate }: { thread: DmcThread, mutate: any }) =
 
                     //   const unchangedThreads = p.filter(t => (t.getDescription() !== thread.getDescription()))
 
-                    return [...p]
+                    return [...p, updatedThread]
 
                 })
             }}
