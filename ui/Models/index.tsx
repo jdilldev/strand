@@ -25,7 +25,7 @@ export interface IThread {
 }
 
 export const getThread = async (brand: ThreadBrandType, identifier: number | string) => {
-    const thread = (await axios.get(`${DEV}/get_thread/${brand}/${identifier}`))
+    const thread = (await axios.get(`${PROD}/get_thread/${brand}/${identifier}`))
 
     return thread.data
 }
@@ -111,7 +111,7 @@ export class DmcThread implements IThread {
     }
 
     updateThread() {
-        axios.put(`${DEV}/update_thread`, {
+        axios.put(`${PROD}/update_thread`, {
             brand: 'dmc',
             code: this.dmcCode,
             hex: this.color,
@@ -125,7 +125,7 @@ export class DmcThread implements IThread {
     }
 
     addThread = async () => {
-        await axios.post(`${DEV}/add_thread`, {
+        await axios.post(`${PROD}/add_thread`, {
             brand: 'dmc',
             dmc_code: this.dmcCode,
             hex: this.color,
@@ -140,7 +140,7 @@ export class DmcThread implements IThread {
 
 
     deleteThread = async () => {
-        await axios.delete(`${DEV}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread`)
     }
 }
 
@@ -163,7 +163,7 @@ export class AnchorThread implements IThread {
     }
 
     addThread = async () => {
-        await axios.post(`${DEV}/add_thread`, {
+        await axios.post(`${PROD}/add_thread`, {
             brand: this.brand,
             code: this.anchorCode,
             hex: this.color,
@@ -175,7 +175,7 @@ export class AnchorThread implements IThread {
     }
 
     updateThread = async () => {
-        await axios.put(`${DEV}/update_thread`, {
+        await axios.put(`${PROD}/update_thread`, {
             brand: 'anchor',
             hex: this.color,
             description: this.description,
@@ -228,7 +228,7 @@ export class AnchorThread implements IThread {
     getThread() { return this }
 
     deleteThread = async () => {
-        await axios.delete(`${DEV}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread`)
     }
 }
 
@@ -250,7 +250,7 @@ export class WeeksDyeWorksThread implements IThread {
     }
 
     addThread = async () => {
-        await axios.post(`${DEV}/add_thread`, {
+        await axios.post(`${PROD}/add_thread`, {
             brand: this.brand,
             hex: this.color,
             description: this.description,
@@ -260,7 +260,7 @@ export class WeeksDyeWorksThread implements IThread {
     }
 
     updateThread = async (remove_dmc?: number) => {
-        await axios.put(`${DEV}/update_thread`, {
+        await axios.put(`${PROD}/update_thread`, {
             brand: 'weeksDyeWorks',
             description: this.description,
             dmc_code: this.dmcCode,
@@ -305,7 +305,7 @@ export class WeeksDyeWorksThread implements IThread {
     getThread() { return this }
 
     deleteThread = async () => {
-        await axios.delete(`${DEV}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread`)
     }
 }
 
@@ -350,7 +350,7 @@ export class ClassicColorworksThread implements IThread {
     setDmcCodes(codes: number[]) { this.dmcCodes = codes }
 
     addThread = async () => {
-        await axios.post(`${DEV}/add_thread`, {
+        await axios.post(`${PROD}/add_thread`, {
             brand: 'classicColorworks',
             dmc_codes: this.dmcCodes,
             description: this.description,
@@ -360,7 +360,7 @@ export class ClassicColorworksThread implements IThread {
     }
 
     updateThread = async () => {
-        await axios.put(`${DEV}/update_thread`, {
+        await axios.put(`${PROD}/update_thread`, {
             brand: 'classicColorworks',
             description: this.description,
             dmc_codes: this.dmcCodes,
@@ -370,6 +370,6 @@ export class ClassicColorworksThread implements IThread {
     }
 
     deleteThread = async () => {
-        await axios.delete(`${DEV}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread`)
     }
 }

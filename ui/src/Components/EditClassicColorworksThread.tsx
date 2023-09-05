@@ -7,9 +7,6 @@ import { AiOutlineDelete } from 'solid-icons/ai'
 import { IoCloseOutline } from 'solid-icons/io'
 import { KeywordInput } from "./Shared"
 
-const DEV = 'http://127.0.0.1:5000'
-const PROD = 'https://jdilldev.pythonanywhere.com'
-
 const EditClassicColorworksThread = ({ thread, mutate }: { thread: ClassicColorworksThread, mutate: any }) => {
     const [color, setColor] = createSignal(thread.getColor())
     const [keywords, setKeywords] = createSignal(thread.getKeywords())

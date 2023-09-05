@@ -6,8 +6,6 @@ import { FiPlusCircle } from 'solid-icons/fi'
 import { IoCloseOutline } from 'solid-icons/io'
 import { AiOutlineDelete } from 'solid-icons/ai'
 
-const DEV = 'http://127.0.0.1:5000'
-const PROD = 'https://jdilldev.pythonanywhere.com'
 
 const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }: { defaultBrand: ThreadBrandType, thread?: IThread, mutate: any, onClose: () => void }) => {
     const [variant, setVariant] = createSignal<ThreadVariantType>(currentThread ? currentThread.getVariant() : '6-strand')

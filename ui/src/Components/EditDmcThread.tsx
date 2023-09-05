@@ -7,9 +7,6 @@ import { AiOutlineDelete } from 'solid-icons/ai'
 import { IoCloseOutline } from 'solid-icons/io'
 import { KeywordInput } from "./Shared"
 
-const DEV = 'http://127.0.0.1:5000'
-const PROD = 'https://jdilldev.pythonanywhere.com'
-
 const EditDmcThread = ({ thread, mutate }: { thread: DmcThread, mutate: any }) => {
     const [brand] = createSignal<ThreadBrandType>(thread.getBrand())
     const [description, setDescription] = createSignal(thread.getDescription())

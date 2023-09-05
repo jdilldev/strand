@@ -8,11 +8,6 @@ import { IoCloseOutline } from 'solid-icons/io'
 import { ChromePicker, SketchPicker } from 'react-color';
 import { KeywordInput } from "./Shared"
 
-const DEV = 'http://127.0.0.1:5000'
-const PROD = 'https://jdilldev.pythonanywhere.com';
-
-
-
 
 const EditWeeksDyeWorksThread = ({ thread, mutate }: { thread: WeeksDyeWorksThread, mutate: any }) => {
     const [color, setColor] = createSignal(thread.getColor())

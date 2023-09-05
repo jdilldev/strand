@@ -14,10 +14,10 @@ const PROD = 'https://jdilldev.pythonanywhere.com'
 export const Dashboard = () => {
     const fetchDmcThreads = async () => {
         const r = (await axios.all([
-            axios.get(`${DEV}/dmc`),
-            axios.get(`${DEV}/anchor`),
-            axios.get(`${DEV}/weeks_dye_works`),
-            axios.get(`${DEV}/classic_colorworks`),
+            axios.get(`${PROD}/dmc`),
+            axios.get(`${PROD}/anchor`),
+            axios.get(`${PROD}/weeks_dye_works`),
+            axios.get(`${PROD}/classic_colorworks`),
         ]).then(axios.spread((dmc, anchor, weeksColorWorks, classicColorworks) => {
             const arr: IThread[] = []
             //     return { data: [...dmc.data, ...anchor.data, ...weeksColorWorks.data, ...classicColorworks.data] }
