@@ -6,6 +6,7 @@ import { ColorSwatchType, ThreadBrandType } from "../../Types"
 import axios from "axios"
 import { ColorSwatchModal } from "./ColorSwatchModal"
 import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread } from "../../Models"
+import { EditThread } from "./EditThread"
 
 const DEV = 'http://127.0.0.1:5000'
 const PROD = 'https://jdilldev.pythonanywhere.com'
@@ -34,7 +35,7 @@ export const Dashboard = () => {
             })
 
             classicColorworks.data.forEach((t: any) => {
-                arr.push(new ClassicColorworksThread(t.color, t.description, t.keywords, t.dmc_code))
+                arr.push(new ClassicColorworksThread(t.color, t.description, t.keywords, t.dmc_codes))
             })
 
             return { data: arr }
@@ -42,12 +43,13 @@ export const Dashboard = () => {
         return r.data
     }
 
-    const [data, { mutate }] = createResource(fetchDmcThreads);
+    const [data, { mutate, refetch }] = createResource(fetchDmcThreads);
     const [showAddThreadForm, setShowAddThreadForm] = createSignal(false)
     const [showEditSwatchModal, setShowEditSwatchModal] = createSignal(false)
     const [searchField, setSearchField] = createSignal('')
     const [selectedThread, setSelectedThread] = createSignal<IThread>()
     const [defaultBrand, setDefaultBrand] = createSignal<ThreadBrandType>('dmc')
+    const [deleteMode, setDeleteMode] = createSignal(false)
 
     // createEffect(() => console.log(data()))
 
@@ -73,26 +75,26 @@ export const Dashboard = () => {
                     class='bg-transparent w-full border-transparent font-light focus:border-transparent focus:ring-0'
                 />
             </div>
-            {showAddThreadForm() && <AddThreadInput defaultBrand={defaultBrand()} type='add' mutate={mutate} onClose={() => setShowAddThreadForm(false)} />}
+            {showAddThreadForm() && <AddThreadInput defaultBrand={defaultBrand()} mutate={mutate} onClose={() => setShowAddThreadForm(false)} />}
         </div>
-
         <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
             <For each={data()?.filter((x: IThread) =>
                 x.getDescription().toLowerCase().includes(searchField())
                 || (('' + x.getCode()).includes(searchField()))
                 || x.getKeywords().some(keyword => keyword.includes(searchField())))
-                .sort((a, b) => a.getBrand() === 'dmc' ? -1 : b.getBrand() === 'dmc' ? 1 : (a.getBrand()).localeCompare(b.getBrand()))
-
-            }>{(thread: IThread) =>
+                .sort((a, b) => a.getBrand() === 'dmc' ? -1 : b.getBrand() === 'dmc' ? 1 : (a.getBrand()).localeCompare(b.getBrand()))}
+            >{(thread: IThread) =>
                 <div onClick={() => {
                     setSelectedThread(thread)
                     setShowEditSwatchModal(true)
                 }}>
-                    <ColorSwatch thread={thread} />
+                    <ColorSwatch thread={thread} deleteMode={deleteMode()} />
                 </div>}
             </For>
-            {showEditSwatchModal() && !!selectedThread() && <AddThreadInput defaultBrand={defaultBrand()} thread={selectedThread()} type='edit' mutate={mutate} onClose={() => setShowEditSwatchModal(false)} />}
         </div>
+        {showEditSwatchModal() && !!selectedThread() && <div class='flex items-center justify-center'>
+            <EditThread thread={selectedThread()!} mutate={mutate} onClose={() => setShowEditSwatchModal(false)} />
+        </div>}
         {
             false && <div class="fixed bottom-3 left-1/4 w-54 bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md" role="alert">
                 <div class="flex">

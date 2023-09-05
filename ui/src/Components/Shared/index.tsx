@@ -9,29 +9,29 @@ type TextFieldType = {
 	togglePassword?: any
 };
 
-export const TagInput = ({ tags }: { tags: string[] }) => {
-	const [newTag, setNewTag] = createSignal('')
-	const [updatedTags, setUpdatedTags] = createSignal<string[]>(tags)
+export const KeywordInput = (props: { keywords: string[], setKeywords: (k: string[]) => void }) => {
+	const [newKeyword, setNewKeyword] = createSignal('')
+	const { setKeywords } = props
 
 	return <div class='flex flex-col gap-1 mb-2 items-center'>
-		<div class='flex flex-row gap-1 w-[300px] flex-wrap self-start px-2' >
-			{updatedTags().map((tag) =>
+		<div class='flex flex-row gap-1 w-[300px] flex-wrap self-center px-2' >
+			{props.keywords.map((keyword) =>
 				<p
-					class='flex flex-row gap-1 items-center font-thin text-sm text-white bg-purple-700 px-2 py-.5 rounded-full w-fit'
+					class='flex flex-row gap-1 items-center font-light text-xs text-white bg-purple-700 px-2 py-.5 rounded-full w-fit'
 					onClick={() => {
-						const tmp = [...updatedTags()]
+						const tmp = [...props.keywords]
 
-						tmp.filter(tmpTag => tag === tmpTag)
-						setUpdatedTags(tmp)
+						tmp.filter(tmpKeyword => keyword === tmpKeyword)
+						setKeywords(tmp)
 					}}
 				>
-					{tag}
+					{keyword}
 					<span>
 						<IoCloseOutline
 							class='w-3 h-3 hover:opacity-60'
 							onClick={() => {
-								const tmp = updatedTags().filter((tmpTag) => tmpTag !== tag)
-								setUpdatedTags(tmp)
+								const tmp = props.keywords.filter((tmpKeyword) => tmpKeyword !== keyword)
+								setKeywords(tmp)
 							}}
 						/>
 					</span>
@@ -41,13 +41,13 @@ export const TagInput = ({ tags }: { tags: string[] }) => {
 			type='text'
 			placeholder="Enter keyword"
 			class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300"
-			value={newTag()}
-			onInput={e => setNewTag(e.target.value)}
+			value={newKeyword()}
+			onInput={e => setNewKeyword(e.target.value)}
 			onKeyPress={(e) => {
 				if (e.key === 'Enter') {
-					if (!updatedTags().includes(newTag()) && newTag() !== '') {
-						setUpdatedTags([...updatedTags(), newTag()])
-						setNewTag('')
+					if (!props.keywords.includes(newKeyword()) && newKeyword() !== '') {
+						setKeywords([...props.keywords, newKeyword()])
+						setNewKeyword('')
 					}
 					else
 						alert('Keyword already exists!')

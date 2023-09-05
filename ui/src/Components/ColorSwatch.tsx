@@ -1,6 +1,7 @@
 import { JSXElement, createSignal } from "solid-js"
 import { BrandMapping, ColorSwatchType, ThreadBrandType, ThreadVariantType } from "../../Types"
 import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread } from "../../Models"
+import { AiOutlineDelete } from 'solid-icons/ai'
 
 
 const variantTagStyle = (variant: ThreadVariantType) => {
@@ -26,7 +27,7 @@ const variantTagStyle = (variant: ThreadVariantType) => {
 
 }
 
-export const ColorSwatch = ({ thread }: { thread: IThread }) => {
+export const ColorSwatch = ({ thread, deleteMode }: { thread: IThread, deleteMode: boolean }) => {
     return <div class='flex flex-col items-start gap-1'>
         <div
             class="w-20 h-20 rounded-md hover:-skew-y-3 hover:-skew-x-3"
@@ -37,6 +38,8 @@ export const ColorSwatch = ({ thread }: { thread: IThread }) => {
             <span class={`font-semibold text-xs w-20`}>{`${BrandMapping.get(thread.getBrand())} ${thread.getCode() ?? ''}`}</span>
             <span class='font-light text-xs w-20'>{thread.getDescription()}</span>
         </div>
+        {deleteMode && <AiOutlineDelete class='hover:opacity-70 text-red-700' onClick={() => thread.deleteThread()} />
+        }
     </div>
 }
 

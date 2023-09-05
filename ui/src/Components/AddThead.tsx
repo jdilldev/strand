@@ -3,13 +3,13 @@ import { createEffect, createResource, createSignal, } from "solid-js"
 import { ThreadBrandType, ThreadVariantType } from "../../Types"
 import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread, getThread } from "../../Models"
 import { FiPlusCircle } from 'solid-icons/fi'
-import { AiOutlineDelete } from 'solid-icons/ai'
 import { IoCloseOutline } from 'solid-icons/io'
+import { AiOutlineDelete } from 'solid-icons/ai'
 
 const DEV = 'http://127.0.0.1:5000'
 const PROD = 'https://jdilldev.pythonanywhere.com'
 
-const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onClose }: { defaultBrand: ThreadBrandType, thread?: IThread, type: 'edit' | 'add', mutate: any, onClose: () => void }) => {
+const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }: { defaultBrand: ThreadBrandType, thread?: IThread, mutate: any, onClose: () => void }) => {
     const [variant, setVariant] = createSignal<ThreadVariantType>(currentThread ? currentThread.getVariant() : '6-strand')
     const [hex, setHex] = createSignal(currentThread ? currentThread.getColor() : '')
     const [dmcCode, setDmcCode] = createSignal<string>('')
@@ -28,38 +28,6 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
 
     const [brand, setBrand] = createSignal<ThreadBrandType>(currentThread ? currentThread.getBrand() : defaultBrand)
 
-    if (currentThread) {
-        let cast;
-        switch (currentThread.getBrand()) {
-            case 'dmc':
-                cast = currentThread as DmcThread
-                setDmcCode(cast.getCode() + '')
-                setDmcDescription(cast.getDescription())
-                setAnchorCodes(cast.getAnchorCodes())
-                setWeeksDyeWorksDescriptions(cast.getWeeksDyeWorks())
-                setClassicColorworksDescription(cast.getClassicColorWorks())
-                break;
-            case 'anchor':
-                cast = currentThread as AnchorThread
-
-                setDmcCode('' + (cast.getDmcCode() || 0))
-                setAnchorCode(cast.getCode() + '')
-                setAnchorDescription(cast.getDescription())
-                break;
-            case 'weeksDyeWorks':
-                cast = currentThread as WeeksDyeWorksThread
-
-                setDmcCode('' + (cast.getDmcCode() || 0))
-                setWeeksDyeWorksDescription(cast.getDescription())
-                break;
-            case 'classicColorworks':
-                cast = currentThread as ClassicColorworksThread
-
-                setDmcCodes(cast.getDmcCodes() || [])
-                setClassicColorworksDescription(cast.getDescription())
-                break;
-        }
-    }
 
     const handleBrandChange = (updatedBrand: ThreadBrandType) => {
         setBrand(updatedBrand)
@@ -109,13 +77,13 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
 
     return <div class='z-10 fixed bg-white top-[100px] mb-3 flex flex-col items-center justify-center self-center rounded-md border-black border-2' >
         <div class='p-3 flex flex-col'>
-            <p class='text-red-700 self-end' onClick={() => onClose()}>CLOSE</p>
-            <p class="text-center text-lg font-light text-blue-500">{`${type === 'edit' ? 'Edit' : 'Add'} to Thread Repository`}</p>
+            <IoCloseOutline class='self-end text-red-600' onClick={() => onClose()} />
+            <p class="text-center text-lg font-light text-blue-500">{`Add to Thread Repository`}</p>
             <div class='flex flex-col mb-4 gap-4'>
                 <div class={`flex flex-row gap-2 ${dmcCodes().length === 1 ? 'items-center' : 'items-start'}`}>
                     {brand() === 'dmc' ? <input checked={true} type={'radio'} name='brand' />
-                        : <input checked={isBrandSelected('dmc') || dmcCode() !== '0' || (dmcCodes()[0] !== 0 && dmcCodes().length !== 0)} type={'checkbox'} onChange={() => handleBrandCheck('dmc')} />}
-                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('dmc')}>DMC</p>
+                        : <input checked={isBrandSelected('dmc') || mappings().includes('dmc')} type={'checkbox'} onChange={() => handleBrandCheck('dmc')} />}
+                    <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('dmc')}>DMC</p>
                     {brand() === 'classicColorworks' ?
                         <div class='flex flex-col gap-1'>
                             {dmcCodes().map((thread, i) => <div class='flex flex-row gap-2'>
@@ -160,7 +128,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
                 <div class={`flex flex-row gap-2 ${anchorCodes().length === 1 ? 'items-center' : 'items-start'}`}>
                     {(brand() === 'anchor' || brand() === 'dmc') && (brand() === 'anchor' ? <input checked={true} type={'radio'} name='brand' /> :
                         <input checked={isBrandSelected('anchor') || (anchorCodes()[0] !== 0 && anchorCodes().length !== 0)} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('anchor')} />)}
-                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('anchor')}>Anchor</p>
+                    <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('anchor')}>Anchor</p>
                     <div class='flex flex-col gap-1'>
                         {brand() === 'anchor' && <div class='flex flex-row gap-2 items-center'>
                             <input
@@ -208,7 +176,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
                 <div class={`flex flex-row gap-2 ${weeksDyeWorksDescriptions().length > 0 ? 'items-start' : 'items-center'}`}>
                     {(brand() === 'weeksDyeWorks' || brand() === 'dmc') && (brand() === 'weeksDyeWorks' ? <input type={'radio'} name='brand' checked={true} /> :
                         <input checked={isBrandSelected('weeksDyeWorks') || (weeksDyeWorksDescriptions()[0] !== '' && weeksDyeWorksDescriptions().length !== 0)} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('weeksDyeWorks')} />)}
-                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('weeksDyeWorks')}>Weeks Dye Works</p>
+                    <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('weeksDyeWorks')}>Weeks Dye Works</p>
                     <div class='flex flex-col gap-1'>
                         {brand() === 'weeksDyeWorks' &&
                             <input
@@ -246,18 +214,22 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
                 </div>
                 <div class='flex flex-row gap-2 items-center'>
                     {(brand() === 'classicColorworks' || brand() === 'dmc') && (brand() === 'classicColorworks' ? <input type={'radio'} name='brand' checked={true} /> : <input checked={isBrandSelected('classicColorworks') || classicColorworksDescription() !== ''} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('classicColorworks')} />)}
-                    <p class={type === 'add' ? `hover:text-blue-400` : 'pointer-events-none'} onClick={() => handleBrandChange('classicColorworks')}>Classic Colorworks</p>
-                    {(brand() === 'dmc' || brand() === 'classicColorworks') && <input type='text' value={classicColorworksDescription()} onInput={
-                        (e) => {
-                            setClassicColorworksDescription(e.target.value)
-                        }}
+                    <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('classicColorworks')}>Classic Colorworks</p>
+                    {(brand() === 'dmc' || brand() === 'classicColorworks') &&
+                        <input
+                            type='text'
+                            value={classicColorworksDescription()}
+                            onInput={
+                                (e) => {
+                                    setClassicColorworksDescription(e.target.value)
+                                }}
 
-                        class="rounded-md h-6 pl-1 w-60 text-sm placeholder:text-gray-300" placeholder="Classic Colorworks description" />}
+                            class={`rounded-md h-6 pl-1 w-60 text-sm placeholder:text-gray-300" placeholder="Classic Colorworks description`} />}
                 </div>
             </div>
             <div class='flex flex-row items-center self-center justify-center gap-3'>
                 <p>Color</p>
-                <input type='color' value={hex()} onInput={(e) => setHex(e.target.value)} />
+                <input type='color' value={hex()} onInput={(e) => setHex(e.target.value)} class='bg-transparent' />
                 <input class='h-2 bg-white border-black bg-transparent w-20 pl-0 rounded-sm text-sm' value={hex()} onInput={(e) => setHex(e.target.value)} />
             </div>
         </div>
@@ -278,7 +250,6 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
                         class='flex flex-row gap-1 items-center font-light text-xs text-white bg-purple-700 px-2 py-.5 rounded-full w-fit'
                         onClick={() => {
                             const tmp = [...keywords()]
-
                             tmp.filter(tmpTag => tag === tmpTag)
                             setKeywords(tmp)
                         }}
@@ -315,11 +286,6 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
             <p class='text-xs text-purple-700'>(press enter to add keyword)</p>
         </div>
         <div class="flex flex-row justify-around w-3/4">
-            {type === 'edit' && <button
-                onClick={() => onClose()}
-                class='w-1/4 font-light uppercase hover:opacity-80 border-blue-400 border-2 text-blue-400 rounded-sm mb-1'>
-                cancel
-            </button>}
             <button
                 disabled={!isValid()}
                 class='w-1/4 font-light uppercase hover:bg-green-600 bg-green-400 text-black rounded-sm mb-1 disabled:opacity-60 disabled:bg-red-300'
@@ -332,97 +298,92 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, type, mutate, onC
                     const dmcCodeAsNumber = Number.parseInt(dmcCode()) ?? undefined
                     const requests: IThread[] = []
 
-                    if (type === 'add') {
-                        if (brand() === 'dmc') {
-                            let anchorArr = anchorCodes()
-                            let weeksDyeWorksArr = weeksDyeWorksDescriptions()
-                            let classicColorworks = classicColorworksDescription()
 
-                            if (Number.isNaN(dmcCodeAsNumber)) {
-                                alert('DMC code is not a valid number; please recheck')
-                            }
+                    if (brand() === 'dmc') {
+                        let anchorArr = anchorCodes()
+                        let weeksDyeWorksArr = weeksDyeWorksDescriptions()
+                        let classicColorworks = classicColorworksDescription()
 
-                            if (!mappings().includes('anchor'))
-                                anchorArr = []
-                            else {
-                                anchorArr.filter(code => code !== 0 && !Number.isNaN(code)).forEach(code => {
-                                    const threadToAdd = new AnchorThread(hex(), code, 'MUST ADD', keywords(), dmcCodeAsNumber!)
-                                    requests.push(threadToAdd)
-                                })
-                            }
+                        if (Number.isNaN(dmcCodeAsNumber)) {
+                            alert('DMC code is not a valid number; please recheck')
+                        }
 
-                            if (!mappings().includes('weeksDyeWorks'))
-                                weeksDyeWorksArr = []
-                            else {
-                                weeksDyeWorksArr.filter(desc => desc !== '').forEach(desc => {
-                                    const threadToAdd = new WeeksDyeWorksThread(hex(), desc, keywords(), dmcCodeAsNumber!)
-                                    requests.push(threadToAdd)
-                                })
-                            }
-
-                            if (!mappings().includes('classicColorworks'))
-                                classicColorworks = ''
-                            else {
-                                const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, keywords(), dmcCodes())
+                        if (!mappings().includes('anchor'))
+                            anchorArr = []
+                        else {
+                            anchorArr.filter(code => code !== 0 && !Number.isNaN(code)).forEach(code => {
+                                const threadToAdd = new AnchorThread(hex(), code, 'MUST ADD', keywords(), dmcCodeAsNumber!)
                                 requests.push(threadToAdd)
-                            }
-
-                            newDmcThread = new DmcThread(hex(), dmcCodeAsNumber, dmcDescription(), variant(), keywords(), anchorArr, weeksDyeWorksArr, classicColorworks)
-
-                            requests.push(newDmcThread)
+                            })
                         }
 
-                        if (brand() === 'anchor') {
-                            const anchorCodeAsNumber = Number.parseInt(anchorCode())
-
-                            newAnchorThread = new AnchorThread(hex(), anchorCodeAsNumber, anchorDescription(), keywords(), dmcCodeAsNumber)
-                            requests.push(newAnchorThread)
-
-                            if (dmcCodeAsNumber)
-                                requests.push(new DmcThread(hex(), dmcCodeAsNumber, 'MUST ADD', variant(), keywords(), [anchorCodeAsNumber]))
+                        if (!mappings().includes('weeksDyeWorks'))
+                            weeksDyeWorksArr = []
+                        else {
+                            weeksDyeWorksArr.filter(desc => desc !== '').forEach(desc => {
+                                const threadToAdd = new WeeksDyeWorksThread(hex(), desc, keywords(), dmcCodeAsNumber!)
+                                requests.push(threadToAdd)
+                            })
                         }
 
-                        if (brand() === 'weeksDyeWorks') {
-
-                            newWeeksDyeWorksThread = new WeeksDyeWorksThread(hex(), weeksDyeWorksDescription(), keywords(), dmcCodeAsNumber)
-                            requests.push(newWeeksDyeWorksThread)
-
-                            if (dmcCodeAsNumber)
-                                requests.push(new DmcThread(hex(), dmcCodeAsNumber, 'MUST ADD', variant(), keywords(), [], [weeksDyeWorksDescription()]))
+                        if (!mappings().includes('classicColorworks'))
+                            classicColorworks = ''
+                        else {
+                            const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, keywords(), dmcCodes())
+                            requests.push(threadToAdd)
                         }
 
-                        if (brand() === 'classicColorworks') {
-                            let dmcArr = dmcCodes()
+                        newDmcThread = new DmcThread(hex(), dmcCodeAsNumber, dmcDescription(), variant(), keywords(), anchorArr, weeksDyeWorksArr, classicColorworks)
 
-                            if (!mappings().includes('dmc'))
-                                dmcArr = []
-                            else {
-                                dmcArr.filter(code => code !== 0 && !Number.isNaN(code)).forEach(code => {
-
-                                    const threadToAdd = new DmcThread(hex(), code, 'MUST ADD', '6-strand', keywords(), [], [], classicColorworksDescription())
-                                    requests.push(threadToAdd)
-                                })
-                            }
-
-                            newClassicColorworksThread = new ClassicColorworksThread(hex(), classicColorworksDescription(), keywords(), dmcArr,)
-                            requests.push(newClassicColorworksThread)
-                        }
-
-                        (async () => {
-                            (await axios.all(requests.map(req => req.addThread())).then(axios.spread((res) => {
-                                mutate((p: any) => [...p, ...requests])
-
-                            })))
-                        })()
+                        requests.push(newDmcThread)
                     }
 
-                    //edit action
+                    if (brand() === 'anchor') {
+                        const anchorCodeAsNumber = Number.parseInt(anchorCode())
 
+                        newAnchorThread = new AnchorThread(hex(), anchorCodeAsNumber, anchorDescription(), keywords(), dmcCodeAsNumber)
+                        requests.push(newAnchorThread)
+
+                        if (dmcCodeAsNumber)
+                            requests.push(new DmcThread(hex(), dmcCodeAsNumber, 'MUST ADD', variant(), keywords(), [anchorCodeAsNumber]))
+                    }
+
+                    if (brand() === 'weeksDyeWorks') {
+
+                        newWeeksDyeWorksThread = new WeeksDyeWorksThread(hex(), weeksDyeWorksDescription(), keywords(), dmcCodeAsNumber)
+                        requests.push(newWeeksDyeWorksThread)
+
+                        if (dmcCodeAsNumber)
+                            requests.push(new DmcThread(hex(), dmcCodeAsNumber, 'MUST ADD', variant(), keywords(), [], [weeksDyeWorksDescription()]))
+                    }
+
+                    if (brand() === 'classicColorworks') {
+                        let dmcArr = dmcCodes()
+
+                        if (!mappings().includes('dmc'))
+                            dmcArr = []
+                        else {
+                            dmcArr.filter(code => code !== 0 && !Number.isNaN(code)).forEach(code => {
+
+                                const threadToAdd = new DmcThread(hex(), code, 'MUST ADD', '6-strand', keywords(), [], [], classicColorworksDescription())
+                                requests.push(threadToAdd)
+                            })
+                        }
+
+                        newClassicColorworksThread = new ClassicColorworksThread(hex(), classicColorworksDescription(), keywords(), dmcArr,)
+                        requests.push(newClassicColorworksThread)
+                    }
+
+                    (async () => {
+                        (await axios.all(requests.map(req => req.addThread())).then(axios.spread((res) => {
+                            mutate((p: any) => [...p, ...requests])
+
+                        })))
+                    })()
 
                 }}>save</button>
-
         </div>
-    </div>
+    </div >
 }
 
 export default AddThreadInput
