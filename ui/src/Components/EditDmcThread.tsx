@@ -36,32 +36,37 @@ const EditDmcThread = ({ thread, mutate }: { thread: DmcThread, mutate: any }) =
                 onChange={e => setDescription(e.target.value)}
             />
         </div>
-        <div class='flex flex-row items-center gap-1'>
+        <div class={`flex flex-row  ${thread.getAnchorCodes().length > 1 ? 'items-start' : 'items-center'}  gap-1`}>
             <input
                 disabled
                 type={'checkbox'}
-                checked={thread.getAnchorCodes().length > 0} />
+                checked={thread.getAnchorCodes().length > 0 && thread.getAnchorCodes()[0] !== 0} />
             <p>Anchor</p>
-            {thread.getAnchorCodes().map(ac => <input
-                readonly
-                type={'text'}
-                class="rounded-md w-16 h-6  text-sm pl-1 placeholder:text-gray-300"
-                placeholder="#"
-            />)}
+            <div class="flex flex-col flex-start gap-1">
+                {thread.getAnchorCodes().map(ac => <input
+                    readonly
+                    value={ac}
+                    type={'text'}
+                    class="rounded-md w-16 h-6  text-sm pl-1 placeholder:text-gray-300"
+                    placeholder="#"
+                />)}
+            </div>
         </div>
-        <div class='flex flex-row items-center gap-1'>
+        <div class={`flex flex-row ${thread.getWeeksDyeWorks().length > 1 ? 'items-start' : 'items-center'} gap-1`}>
             <input
                 disabled
                 type={'checkbox'}
-                checked={thread.getWeeksDyeWorks().length > 0} />
+                checked={thread.getWeeksDyeWorks().length > 0 && thread.getWeeksDyeWorks()[0] !== ''} />
             <p>Weeks Dye Works</p>
-            {thread.getWeeksDyeWorks().map(wdw => <input
-                readOnly
-                value={wdw}
-                type='text'
-                class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300"
-                placeholder="Weeks Dye Works description"
-            />)}
+            <div class="flex flex-col flex-start gap-1">
+                {thread.getWeeksDyeWorks().map(wdw => <input
+                    readOnly
+                    value={wdw}
+                    type='text'
+                    class="rounded-md h-6 text-sm w-60 pl-1 placeholder:text-gray-300"
+                    placeholder="Weeks Dye Works description"
+                />)}
+            </div>
         </div>
         <div class='flex flex-row items-center gap-1'>
             <input

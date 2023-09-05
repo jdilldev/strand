@@ -329,7 +329,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                         if (!mappings().includes('classicColorworks'))
                             classicColorworks = ''
                         else {
-                            const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, keywords(), dmcCodes())
+                            const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, keywords(), [Number.parseInt(dmcCode())])
                             requests.push(threadToAdd)
                             setClassicColorworksDescription('')
                         }
