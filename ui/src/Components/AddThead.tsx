@@ -35,10 +35,8 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
         if (!mappings().includes(selectedBrand))
             setMappings([...mappings(), selectedBrand])
         else
-            handleBrandUncheck(selectedBrand)
+            setMappings([...mappings().filter(x => x !== selectedBrand)])
     }
-
-    const handleBrandUncheck = (selectedBrand: ThreadBrandType) => setMappings([...mappings().filter(x => x !== selectedBrand)])
 
 
     const isBrandSelected = (selectedBrand: ThreadBrandType) => (mappings().includes(selectedBrand) || brand() === selectedBrand)
@@ -80,7 +78,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
             <div class='flex flex-col mb-4 gap-4'>
                 <div class={`flex flex-row gap-2 ${dmcCodes().length === 1 ? 'items-center' : 'items-start'}`}>
                     {brand() === 'dmc' ? <input checked={true} type={'radio'} name='brand' />
-                        : <input checked={isBrandSelected('dmc') || mappings().includes('dmc')} type={'checkbox'} onChange={() => handleBrandCheck('dmc')} />}
+                        : <input checked={mappings().includes('dmc')} type={'checkbox'} onChange={() => handleBrandCheck('dmc')} />}
                     <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('dmc')}>DMC</p>
                     {brand() === 'classicColorworks' ?
                         <div class='flex flex-col gap-1'>
@@ -125,7 +123,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                 </div>
                 <div class={`flex flex-row gap-2 ${anchorCodes().length === 1 ? 'items-center' : 'items-start'}`}>
                     {(brand() === 'anchor' || brand() === 'dmc') && (brand() === 'anchor' ? <input checked={true} type={'radio'} name='brand' /> :
-                        <input checked={isBrandSelected('anchor') || (anchorCodes()[0] !== 0 && anchorCodes().length !== 0)} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('anchor')} />)}
+                        <input checked={mappings().includes('anchor')} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('anchor')} />)}
                     <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('anchor')}>Anchor</p>
                     <div class='flex flex-col gap-1'>
                         {brand() === 'anchor' && <div class='flex flex-row gap-2 items-center'>
@@ -173,7 +171,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                 </div>
                 <div class={`flex flex-row gap-2 ${weeksDyeWorksDescriptions().length > 0 ? 'items-start' : 'items-center'}`}>
                     {(brand() === 'weeksDyeWorks' || brand() === 'dmc') && (brand() === 'weeksDyeWorks' ? <input type={'radio'} name='brand' checked={true} /> :
-                        <input checked={isBrandSelected('weeksDyeWorks') || (weeksDyeWorksDescriptions()[0] !== '' && weeksDyeWorksDescriptions().length !== 0)} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('weeksDyeWorks')} />)}
+                        <input checked={mappings().includes('weeksDyeWorks')} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('weeksDyeWorks')} />)}
                     <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('weeksDyeWorks')}>Weeks Dye Works</p>
                     <div class='flex flex-col gap-1'>
                         {brand() === 'weeksDyeWorks' &&
@@ -211,7 +209,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                     </div>
                 </div>
                 <div class='flex flex-row gap-2 items-center'>
-                    {(brand() === 'classicColorworks' || brand() === 'dmc') && (brand() === 'classicColorworks' ? <input type={'radio'} name='brand' checked={true} /> : <input checked={isBrandSelected('classicColorworks') || classicColorworksDescription() !== ''} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('classicColorworks')} />)}
+                    {(brand() === 'classicColorworks' || brand() === 'dmc') && (brand() === 'classicColorworks' ? <input type={'radio'} name='brand' checked={true} /> : <input checked={mappings().includes('classicColorworks')} type={'checkbox'} name='brand' onInput={() => handleBrandCheck('classicColorworks')} />)}
                     <p class={`hover:text-blue-400`} onClick={() => handleBrandChange('classicColorworks')}>Classic Colorworks</p>
                     {(brand() === 'dmc' || brand() === 'classicColorworks') &&
                         <input
@@ -329,6 +327,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                         else {
                             const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, keywords(), dmcCodes())
                             requests.push(threadToAdd)
+                            setClassicColorworksDescription('')
                         }
 
                         newDmcThread = new DmcThread(hex(), dmcCodeAsNumber, dmcDescription(), variant(), keywords(), anchorArr, weeksDyeWorksArr, classicColorworks)
