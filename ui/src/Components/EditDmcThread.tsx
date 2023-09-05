@@ -104,9 +104,9 @@ const EditDmcThread = ({ thread, mutate }: { thread: DmcThread, mutate: any }) =
                     const updatedThread: DmcThread = new DmcThread(color(), thread.getCode(), description(), thread.getVariant(), keywords(), thread.getAnchorCodes(), thread.getWeeksDyeWorks(), thread.getClassicColorWorks())
                     updatedThread.updateThread()
 
-                    //   const unchangedThreads = p.filter(t => (t.getDescription() !== thread.getDescription()))
+                    const unchangedThreads = p.filter(t => (t.getCode() !== thread.getCode()))
 
-                    return [...p, updatedThread]
+                    return [...unchangedThreads, updatedThread]
 
                 })
             }}
