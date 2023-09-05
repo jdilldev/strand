@@ -64,6 +64,7 @@ const EditAnchorThread = ({ thread, mutate }: { thread: AnchorThread, mutate: an
 
                     const unchangedThreads = p.filter(t => (t.getCode() !== thread.getAnchorCode()))
 
+
                     return [...unchangedThreads, updatedThread]
 
                 })
