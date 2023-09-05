@@ -1,5 +1,6 @@
 from . import models
 from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy import update
 
 def convert_to_dict(obj):
  dictionary = dict(obj.__dict__)
@@ -36,6 +37,42 @@ def get_thread(session, brand, id):
             res = "Not Found"  
 
     return res
+
+def delete_thread(session, brand, id):
+    res = 'ERROR'
+    if (brand == 'dmc'):
+        try:
+            to_delete = session.query(models.DmcThread).get(id)
+            session.delete(to_delete)
+            res ='deleted'
+        except:
+            res = "Not Found"
+    if (brand == 'anchor'):
+        try:
+            to_delete = session.query(models.AnchorThread).get(id)
+            session.delete(to_delete)
+            res ='deleted'
+        except:
+            res = "Not Found"  
+    if (brand == 'weeksDyeWorks'):
+        try:
+            to_delete = session.query(models.WeeksDyeWorksThread).get(id)
+            session.delete(to_delete) 
+            res ='deleted'
+        except:
+            res = "Not Found"
+    if (brand == 'classicColorworks'):
+        try:
+            to_delete = session.query(models.ClassicColorworksThread).get(id)
+            session.delete(to_delete)
+            res ='deleted'
+        except:
+            res = "Not Found"  
+
+    session.flush()
+    session.commit()
+    return res
+
 
 def get_dmc(session):
     res = []
@@ -119,3 +156,43 @@ def add_classic_colorworks_thread(session, color, description, keywords, dmc_cod
     )
     session.add(score)
     session.commit()
+
+#session.query(Clients).filter(Clients.id == client_id_list).update({'status': status})
+#session.commit()
+
+#session.execute(update(stuff_table, values={stuff_table.c.foo: stuff_table.c.foo + 1}))
+#session.commit()
+
+#q = dbsession.query(Toner)
+#q = q.filter(Toner.toner_id==1)
+#record = q.one()
+#record.toner_color = 'Azure Radiance'
+
+#dbsession.commit() 
+
+def update_dmc_thread(session, data):
+    print(data)
+    session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==data['dmc_code']).values(data))
+
+    session.commit()   
+
+def update_anchor_thread(session, data):
+    print(data)
+    session.execute(update(models.AnchorThread).where(models.AnchorThread.anchor_code==data['anchor_code']).values(data))
+    
+    session.commit()   
+
+def update_weeks_dye_works_thread(session, data):
+    print(data)
+    session.execute(update(models.WeeksDyeWorksThread).where(models.WeeksDyeWorksThread.description==data['description']).values(data))
+    """     if (data['dmc_code']):
+        del data['description'] #dont want to change dmc_description in dmc table
+        session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==data['dmc_code']).values(data)) """
+
+    session.commit()    
+
+
+def update_classic_colorworks_thread(session, data):
+    print(data)
+    session.execute(update(models.ClassicColorworksThread).where(models.ClassicColorworksThread.description==data['description']).values(data))
+    session.commit()    

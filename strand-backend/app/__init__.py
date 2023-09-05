@@ -19,21 +19,6 @@ engine.connect()
 
 dmc = models.DmcThread
 
-#session.query(Clients).filter(Clients.id == client_id_list).update({'status': status})
-#session.commit()
-
-#session.execute(update(stuff_table, values={stuff_table.c.foo: stuff_table.c.foo + 1}))
-#session.commit()
-
-#q = dbsession.query(Toner)
-#q = q.filter(Toner.toner_id==1)
-#record = q.one()
-#record.toner_color = 'Azure Radiance'
-
-#dbsession.commit()
-
-""" with Session(engine) as session: """
-
 @app.route("/dmc", methods=['GET'])
 def dmc_all():
     with Session(engine) as session:
@@ -110,3 +95,39 @@ def addThread():
     
     return jsonify('m')
 
+@app.route("/update_thread", methods=['PUT'])
+def update_thread():
+    print(request.json)
+    with Session(engine) as session:
+        brand = request.json['brand']
+        color =  request.json['hex']
+        description =  request.json['description']
+        keywords = request.json['keywords']
+            
+        match brand:
+            case 'dmc':
+                code = request.json['code']
+                variant = request.json['variant']
+                anchor_codes = request.json['anchor_codes'] if 'anchor_codes' in request.json else []
+                weeks_dye_works= request.json['weeks_dye_works'] if 'weeks_dye_works' in request.json else []
+                classic_colorworks= request.json['classic_colorworks'] if 'classic_colorworks' in request.json else None
+                strand.update_dmc_thread(session,{ 'color':color,'dmc_code':code, 'description':description, 'variant':variant,  'keywords':keywords, 'anchor_codes':anchor_codes, 'weeks_dye_works':weeks_dye_works, 'classic_colorworks':classic_colorworks})
+            case 'anchor':
+                dmc_code = request.json['dmc_code'] if 'dmc_code' in request.json else None
+                anchor_code = request.json['anchor_code']
+                strand.update_anchor_thread(session ,{'color':color,'anchor_code':anchor_code, 'description':description,'keywords':keywords, 'dmc_code':dmc_code})
+            case 'weeksDyeWorks':
+                dmc_code = request.json['dmc_code'] if 'dmc_code' in request.json else None
+                strand.update_weeks_dye_works_thread(session,{'description':description, 'color':color, 'keywords':keywords, 'dmc_code':dmc_code})
+            case 'classicColorworks':
+                dmc_codes = request.json['dmc_codes']
+                strand.update_classic_colorworks_thread(session, {"color":color, 'description':description, 'keywords':keywords,'dmc_codes':dmc_codes})
+    
+    return jsonify('m')
+
+@app.route("/delete_thread/<brand>/<id>", methods=['DELETE'])
+def delete_thread(brand, id):
+    with Session(engine) as session:
+        strand.delete_thread(session,brand, id)
+
+    return jsonify('m')
