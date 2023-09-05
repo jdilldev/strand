@@ -259,14 +259,14 @@ export class WeeksDyeWorksThread implements IThread {
         })
     }
 
-    updateThread = async (removeCode?: number) => {
+    updateThread = async (remove_dmc?: number) => {
         await axios.put(`${DEV}/update_thread`, {
             brand: 'weeksDyeWorks',
             description: this.description,
             dmc_code: this.dmcCode,
             keywords: this.keywords,
             hex: this.color,
-            removeCode,
+            remove_dmc,
         })
     }
 

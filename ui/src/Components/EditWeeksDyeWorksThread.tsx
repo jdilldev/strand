@@ -65,10 +65,11 @@ const EditWeeksDyeWorksThread = ({ thread, mutate }: { thread: WeeksDyeWorksThre
             disabled={checked() && !(!!dmcCode())}
             class='w-1/4 self-end font-light uppercase hover:bg-green-600 bg-green-400 text-black rounded-sm disabled:opacity-60 disabled:bg-red-300'
             onClick={() => {
+                const previousDmcCode = thread.getDmcCode()
+                const currentDmcCode = checked() ? dmcCode() : undefined
+                const updatedThread: WeeksDyeWorksThread = new WeeksDyeWorksThread(color(), thread.getDescription(), keywords(), currentDmcCode);
 
-                const dmc_code = checked() ? dmcCode() : undefined
-                const updatedThread: WeeksDyeWorksThread = new WeeksDyeWorksThread(color(), thread.getDescription(), keywords(), dmc_code)
-                updatedThread.updateThread()
+                (previousDmcCode && (previousDmcCode !== currentDmcCode)) ? updatedThread.updateThread(previousDmcCode) : updatedThread.updateThread()
 
                 mutate((p: IThread[]) => {
                     const unchangedThreads = p.filter(t => (t.getDescription() !== thread.getDescription()))

@@ -99,12 +99,12 @@ const EditDmcThread = ({ thread, mutate }: { thread: DmcThread, mutate: any }) =
         <button
             onClick={() => {
                 mutate((p: IThread[]) => {
-                    const updatedThread: DmcThread = new DmcThread(color(), thread.getCode(), thread.getDescription(), thread.getVariant(), keywords(), thread.getAnchorCodes(), thread.getWeeksDyeWorks(), thread.getClassicColorWorks())
+                    const updatedThread: DmcThread = new DmcThread(color(), thread.getCode(), description(), thread.getVariant(), keywords(), thread.getAnchorCodes(), thread.getWeeksDyeWorks(), thread.getClassicColorWorks())
                     updatedThread.updateThread()
 
-                    const unchangedThreads = p.filter(t => (t.getDescription() !== thread.getDescription()))
+                    //   const unchangedThreads = p.filter(t => (t.getDescription() !== thread.getDescription()))
 
-                    return [...unchangedThreads, updatedThread]
+                    return [...p]
 
                 })
             }}
