@@ -140,7 +140,7 @@ export class DmcThread implements IThread {
 
 
     deleteThread = async () => {
-        await axios.delete(`${PROD}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread/dmc/${this.dmcCode}`)
     }
 }
 
@@ -228,7 +228,7 @@ export class AnchorThread implements IThread {
     getThread() { return this }
 
     deleteThread = async () => {
-        await axios.delete(`${PROD}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread/anchor/${this.anchorCode}`)
     }
 }
 
@@ -305,7 +305,7 @@ export class WeeksDyeWorksThread implements IThread {
     getThread() { return this }
 
     deleteThread = async () => {
-        await axios.delete(`${PROD}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread/weeksDyeWorks/${this.description}`)
     }
 }
 
@@ -370,6 +370,6 @@ export class ClassicColorworksThread implements IThread {
     }
 
     deleteThread = async () => {
-        await axios.delete(`${PROD}/delete_thread`)
+        await axios.delete(`${PROD}/delete_thread/classicColorworks/${this.description}`)
     }
 }

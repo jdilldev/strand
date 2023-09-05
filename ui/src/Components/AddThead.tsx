@@ -68,6 +68,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
         if (mappings().includes('weeksDyeWorks'))
             valid = weeksDyeWorksDescriptions().every(desc => !!desc)
 
+
         return valid && !!hex() && hex().startsWith('#')
     }
 
@@ -310,16 +311,19 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                             anchorArr.filter(code => code !== 0 && !Number.isNaN(code)).forEach(code => {
                                 const threadToAdd = new AnchorThread(hex(), code, 'MUST ADD', keywords(), dmcCodeAsNumber!)
                                 requests.push(threadToAdd)
+
                             })
+                            setAnchorCodes([0])
                         }
 
                         if (!mappings().includes('weeksDyeWorks'))
-                            weeksDyeWorksArr = []
+                            weeksDyeWorksArr = ['']
                         else {
                             weeksDyeWorksArr.filter(desc => desc !== '').forEach(desc => {
                                 const threadToAdd = new WeeksDyeWorksThread(hex(), desc, keywords(), dmcCodeAsNumber!)
                                 requests.push(threadToAdd)
                             })
+                            setWeeksDyeWorksDescriptions([''])
                         }
 
                         if (!mappings().includes('classicColorworks'))
@@ -333,6 +337,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                         newDmcThread = new DmcThread(hex(), dmcCodeAsNumber, dmcDescription(), variant(), keywords(), anchorArr, weeksDyeWorksArr, classicColorworks)
 
                         requests.push(newDmcThread)
+
                     }
 
                     if (brand() === 'anchor') {
@@ -374,8 +379,12 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                     (async () => {
                         (await axios.all(requests.map(req => req.addThread())).then(axios.spread((res) => {
                             mutate((p: any) => [...p, ...requests])
+                            alert(`Successfully added ${requests.length} thread${requests.length === 1 ? '' : 's'}!`)
 
-                        })))
+                            setMappings([])
+
+
+                        })).catch(() => alert('Failure to save all threads. Check for missing threads. May be a duplicate identifier')))
                     })()
 
                 }}>save</button>

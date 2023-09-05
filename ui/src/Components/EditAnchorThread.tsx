@@ -18,7 +18,7 @@ const EditAnchorThread = ({ thread, mutate }: { thread: AnchorThread, mutate: an
 
     return <div class="flex flex-col self-start gap-3">
         <div class='flex flex-row items-center gap-1'>
-            <input checked={false} type={'checkbox'} name='brand' />
+            <input checked={!!thread.getDmcCode()} type={'checkbox'} name='brand' />
             <p>DMC</p>
             {thread.getDmcCode() && <input
                 readonly
@@ -46,7 +46,7 @@ const EditAnchorThread = ({ thread, mutate }: { thread: AnchorThread, mutate: an
                 type={'text'}
                 class="rounded-md w-60 h-6 text-sm pl-1 placeholder:text-gray-300"
                 placeholder="Anchor description"
-                onChange={(e) => thread.setDescription(e.target.value)}
+                onChange={(e) => setDesc(e.target.value)}
             />
         </div>
         <div class='flex flex-row items-center self-center justify-center gap-2'>

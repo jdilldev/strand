@@ -34,10 +34,11 @@ export const EditThread = ({ thread, mutate, onClose }: { thread: IThread, mutat
             thread.deleteThread()
             mutate((p: IThread[]) => p.filter((x: IThread) => {
                 if (brand === 'dmc' || brand === 'anchor')
-                    return x.getCode() === thread.getCode()
+                    return x.getCode() !== thread.getCode()
                 else
-                    return x.getDescription() === thread.getDescription()
+                    return x.getDescription() !== thread.getDescription()
             }))
+            onClose()
         }} />
     </div>
 }
