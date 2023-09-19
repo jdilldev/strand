@@ -1,11 +1,7 @@
 import axios from "axios"
 import { Show, createEffect, createResource, createSignal, } from "solid-js"
 import { BrandMapping, ThreadBrandType, ThreadVariantType } from "../../Types"
-import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread, getThread } from "../../Models"
-import { FiPlusCircle } from 'solid-icons/fi'
-import { AiOutlineDelete } from 'solid-icons/ai'
-import { IoCloseOutline } from 'solid-icons/io'
-import { ChromePicker, SketchPicker } from 'react-color';
+import { DmcThread, IThread, WeeksDyeWorksThread, getThread } from "../../Models"
 import { KeywordInput } from "./Shared"
 
 
@@ -14,24 +10,21 @@ const EditWeeksDyeWorksThread = ({ thread, mutate }: { thread: WeeksDyeWorksThre
     const [keywords, setKeywords] = createSignal(thread.getKeywords())
     const [dmcCode, setDmcCode] = createSignal(thread.getDmcCode())
     const [checked, setChecked] = createSignal(!!dmcCode() && dmcCode() !== 0)
-    const [dmcThread, setDmcThread] = createSignal<DmcThread>();
 
     return <div class="flex flex-col self-start gap-3">
         <div class='flex flex-row items-center gap-1'>
             <input
-                disabled
-                checked={!!checked()}
+                checked={checked()}
                 type={'checkbox'}
                 name='brand'
-            //onChange={() => checked() ? setChecked(false) : setChecked(true)}
+                onChange={() => setChecked(!checked())}
             />
             <p>DMC</p>
             <input
-                readOnly
                 type={'text'}
                 class="rounded-md w-16 h-6  text-sm pl-1 placeholder:text-gray-300"
                 placeholder="#"
-                value={!!dmcCode() ? dmcCode() : ''}
+                value={dmcCode() === 0 ? '' : dmcCode()}
                 onInput={(e) => setDmcCode(Number.parseInt(e.target.value))}
             />
         </div>
@@ -47,7 +40,6 @@ const EditWeeksDyeWorksThread = ({ thread, mutate }: { thread: WeeksDyeWorksThre
                 class="rounded-md w-fit h-6 text-sm pl-1 capitalize placeholder:text-gray-300"
                 placeholder="Weeks Dye Works description"
                 value={thread.getDescription()}
-                onChange={(e) => thread.setDescription(e.target.value)}
             />
         </div>
         <div class='flex flex-row items-center self-center justify-center gap-2'>
@@ -57,54 +49,30 @@ const EditWeeksDyeWorksThread = ({ thread, mutate }: { thread: WeeksDyeWorksThre
         </div>
         <KeywordInput keywords={keywords()} setKeywords={setKeywords} />
         <button
-            disabled={checked() && !(!!dmcCode())}
+            //disabled={checked() && !dmcCode()}
             class='w-1/4 self-end font-light uppercase hover:bg-green-600 bg-green-400 text-black rounded-sm disabled:opacity-60 disabled:bg-red-300'
-            onClick={() => {
+            onClick={async () => {
                 const previousDmcCode = thread.getDmcCode()
                 const currentDmcCode = checked() ? dmcCode() : undefined
                 const updatedThread: WeeksDyeWorksThread = new WeeksDyeWorksThread(color(), thread.getDescription(), keywords(), currentDmcCode);
+                const r = await getThread('dmc', currentDmcCode || 0);
 
-                (previousDmcCode && (previousDmcCode !== currentDmcCode)) ? updatedThread.updateThread(previousDmcCode) : updatedThread.updateThread()
+                (!!previousDmcCode && (!currentDmcCode || (!!currentDmcCode && (previousDmcCode !== currentDmcCode))))
+                    ? updatedThread.updateThread(previousDmcCode)
+                    : updatedThread.updateThread()
 
                 mutate((p: IThread[]) => {
-                    const unchangedThreads = p.filter(t => (t.getDescription() !== thread.getDescription()))
+                    const unchangedThreads = p.filter(t => ((t.getDescription() !== thread.getDescription()) && t.getCode() !== currentDmcCode))
 
+                    if (r !== 'Not Found') {
+                        const dmcThread = new DmcThread(color(), currentDmcCode!, r.description, r.variant, keywords(), r.anchor_codes, r.weeks_dye_works, r.classic_colorworks)
+                        const isAddNeeded = !dmcThread.getWeeksDyeWorks().includes(thread.getDescription())
+                        isAddNeeded ? dmcThread.addWeeksDyeWorksThread(thread.getDescription()) : null
+
+                        unchangedThreads.push(dmcThread)
+                    }
                     return [...unchangedThreads, updatedThread]
-
                 })
-
-                //  mutate((p: IThread[]) => {
-                /*    const unchangedThreads = p.filter(t => (t.getDescription() !== thread.getDescription()) && (t.getCode() !== thread.getDmcCode()))
-                   //if the dmc_code didnt exist previously, but does now, then dmc_code added
-                   if (!thread.getDmcCode() && dmc_code) {
-                       console.log('dmc added ', dmc_code)
- 
-                       //check if DMC thread exists, if not create it
-                       getThread('dmc', dmc_code).then(res => {
-                           console.log(res)
-                           if (res === 'Not Found') {
- 
- 
- 
-                               updatedThreads.push(new DmcThread(res.color, dmc_code, 'MUST ADD', '6-strand', [], [], [thread.getDescription()]))
-                           }
- 
-                       })
- 
-                       // if previous dmc_code was present
-                   } else if (thread.getDmcCode()) {
-                       getThread('dmc', thread.getDmcCode()!).then(res => {
-                           if (dmc_code === undefined) {
-                               console.log('dmc removed')
-                           }
-                           else if (thread.getDmcCode() !== dmc_code) {
-                               console.log('dmc changed')
-                           }
-                       })
-                   } */
-                //  })
-
-                // updatedThreads.forEach(threadToUpdate => threadToUpdate.updateThread())
             }} >
             save
         </button>
