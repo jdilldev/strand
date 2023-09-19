@@ -27,19 +27,17 @@ const variantTagStyle = (variant: ThreadVariantType) => {
 
 }
 
-export const ColorSwatch = ({ thread, deleteMode }: { thread: IThread, deleteMode: boolean }) => {
-    return <div class='flex flex-col items-start gap-1'>
+export const ColorSwatch = ({ thread }: { thread: IThread }) => {
+    return <div class='flex flex-col items-center md:items-start gap-1'>
         <div
-            class="w-20 h-20 rounded-md hover:-skew-y-3 hover:-skew-x-3"
+            class="w-16 h-16 md:w-20 md:h-20 rounded-md hover:-skew-y-3 hover:-skew-x-3"
             style={{ background: thread.getColor() }}
         />
         <span class={`text-xs font-medium inline-block py-.5 px-1.5 uppercase rounded last:mr-0 mr-0.5 ${variantTagStyle(thread.getVariant())}`}>{thread.getVariant()}</span>
         <div class='flex flex-col'>
-            <span class={`font-semibold text-xs w-20`}>{`${BrandMapping.get(thread.getBrand())} ${thread.getCode() ?? ''}`}</span>
-            <span class='font-light text-xs w-20'>{thread.getDescription()}</span>
+            <span class={`font-semibold text-xs w-16 md:20`}>{`${BrandMapping.get(thread.getBrand())} ${thread.getCode() ?? ''}`}</span>
+            <span class='font-light text-xs w-16 md:20'>{thread.getDescription()}</span>
         </div>
-        {deleteMode && <AiOutlineDelete class='hover:opacity-70 text-red-700' onClick={() => thread.deleteThread()} />
-        }
     </div>
 }
 

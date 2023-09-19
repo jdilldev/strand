@@ -299,7 +299,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                     if (brand() === 'dmc') {
                         let anchorArr = anchorCodes()
                         let weeksDyeWorksArr = weeksDyeWorksDescriptions()
-                        let classicColorworks = classicColorworksDescription()
+                        let classicColorworks: string | undefined = classicColorworksDescription() ?? undefined
 
                         if (Number.isNaN(dmcCodeAsNumber)) {
                             alert('DMC code is not a valid number; please recheck')
@@ -317,7 +317,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                         }
 
                         if (!mappings().includes('weeksDyeWorks'))
-                            weeksDyeWorksArr = ['']
+                            weeksDyeWorksArr = []
                         else {
                             weeksDyeWorksArr.filter(desc => desc !== '').forEach(desc => {
                                 const threadToAdd = new WeeksDyeWorksThread(hex(), desc, keywords(), dmcCodeAsNumber!)
@@ -327,7 +327,7 @@ const AddThreadInput = ({ defaultBrand, thread: currentThread, mutate, onClose }
                         }
 
                         if (!mappings().includes('classicColorworks'))
-                            classicColorworks = ''
+                            classicColorworks = undefined
                         else {
                             const threadToAdd = new ClassicColorworksThread(hex(), classicColorworks, keywords(), [Number.parseInt(dmcCode())])
                             requests.push(threadToAdd)

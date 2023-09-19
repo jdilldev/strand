@@ -174,14 +174,15 @@ export class AnchorThread implements IThread {
         })
     }
 
-    updateThread = async () => {
-        await axios.put(`${PROD}/update_thread`, {
+    updateThread = async (remove_dmc?: number) => {
+        await axios.put(`${DEV}/update_thread`, {
             brand: 'anchor',
             hex: this.color,
             description: this.description,
             keywords: this.keywords,
             dmc_code: this.dmcCode,
             anchor_code: this.anchorCode,
+            remove_dmc
         })
     }
 
@@ -260,7 +261,7 @@ export class WeeksDyeWorksThread implements IThread {
     }
 
     updateThread = async (remove_dmc?: number) => {
-        await axios.put(`${PROD}/update_thread`, {
+        await axios.put(`${DEV}/update_thread`, {
             brand: 'weeksDyeWorks',
             description: this.description,
             dmc_code: this.dmcCode,

@@ -1,5 +1,4 @@
 import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread } from "../../Models"
-import { BrandMapping, ThreadBrandType } from "../../Types"
 import EditDmcThread from "./EditDmcThread"
 import EditAnchorThread from "./EditAnchorThread"
 import { IoCloseOutline } from 'solid-icons/io'

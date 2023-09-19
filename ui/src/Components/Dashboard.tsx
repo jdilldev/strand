@@ -1,12 +1,11 @@
-import { TextField } from "./Shared"
 import { ColorSwatch } from "./ColorSwatch"
 import { createEffect, createResource, createSignal, For, Show } from "solid-js"
 import AddThreadInput from "./AddThead"
-import { ColorSwatchType, ThreadBrandType } from "../../Types"
+import { ThreadBrandType } from "../../Types"
 import axios from "axios"
-import { ColorSwatchModal } from "./ColorSwatchModal"
 import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread } from "../../Models"
 import { EditThread } from "./EditThread"
+import chroma from "chroma-js"
 
 const DEV = 'http://127.0.0.1:5000'
 const PROD = 'https://jdilldev.pythonanywhere.com'
@@ -50,8 +49,22 @@ export const Dashboard = () => {
     const [selectedThread, setSelectedThread] = createSignal<IThread>()
     const [defaultBrand, setDefaultBrand] = createSignal<ThreadBrandType>('dmc')
     const [deleteMode, setDeleteMode] = createSignal(false)
+    const [allKeywords, setAllKeywords] = createSignal<string[]>([])
+    const [keywordSearch, setKeywordSearch] = createSignal('')
 
-    // createEffect(() => console.log(data()))
+    createEffect(() => {
+        if (!data()) return
+        const set = new Set<string>()
+
+        data()?.forEach((thread) =>
+            thread.getKeywords().forEach((keyword) =>
+                set.add(keyword)
+            )
+        )
+
+        const arr = Array.from(set)
+        setAllKeywords(arr)
+    })
 
     return <Show when={data()} fallback={<p>Loading</p>}>
         <div class='flex flex-col justify-evenly items-center p-2'>
@@ -67,7 +80,7 @@ export const Dashboard = () => {
             </div>
             <div class={`flex flex-row self-center justify-between items-center px-2 rounded-full w-11/12 md:w-7/12 bg-[#F6F6F6] text-black placeholder:font-light placeholder:text-[#BDBDBD]`}>
                 <input
-                    placeholder='Search'
+                    placeholder='Search by description or code'
                     value={searchField()}
                     onInput={(e) => {
                         setSearchField(e.target.value)
@@ -75,6 +88,22 @@ export const Dashboard = () => {
                     class='bg-transparent w-full border-transparent font-light focus:border-transparent focus:ring-0'
                 />
             </div>
+            {/*        <div class={`flex flex-row self-center justify-between items-center px-2 rounded-full w-11/12 md:w-7/12 bg-[#F6F6F6] text-black placeholder:font-light placeholder:text-[#BDBDBD]`}>
+                <input
+                    placeholder='Search keywords'
+                    value={keywordSearch()}
+                    onInput={(e) => {
+                        setKeywordSearch(e.target.value)
+                    }}
+                    class='bg-transparent w-full border-transparent font-light focus:border-transparent focus:ring-0'
+                />
+
+            </div> */}
+            {keywordSearch() !== '' && <div class='flex flex-row flex-wrap items-center justify-center gap-3 w-full'>
+                {allKeywords().filter(keyword => keyword.includes(keywordSearch())).map(
+                    k => <span class='bg-purple-100 w-fit px-1 rounded-full hover:opacity-70 hover:cursor-pointer'>{k}</span>
+                )}
+            </div>}
             {showAddThreadForm() && <AddThreadInput defaultBrand={defaultBrand()} mutate={mutate} onClose={() => setShowAddThreadForm(false)} />}
         </div>
         <div class='flex flex-row flex-wrap gap-3 items-start p-4'>
@@ -82,13 +111,24 @@ export const Dashboard = () => {
                 x.getDescription().toLowerCase().includes(searchField())
                 || (('' + x.getCode()).includes(searchField()))
                 || x.getKeywords().some(keyword => keyword.includes(searchField())))
-                .sort((a, b) => a.getBrand() === 'dmc' ? -1 : b.getBrand() === 'dmc' ? 1 : (a.getBrand()).localeCompare(b.getBrand()))}
+                /*      .sort((a, b) => {
+                         const aColor = a.getColor()
+                         const bColor = b.getColor()
+                         console.log(chroma(aColor).hsl())
+     
+                         const x = chroma(aColor).hsv()[0] + chroma(bColor).hsv()[0]
+                         const y = chroma(aColor).hsv()[2] - chroma(bColor).hsv()[2]
+     
+                         return y
+                     }) */
+                .sort((a, b) => a.getBrand() === 'dmc' ? -1 : b.getBrand() === 'dmc' ? 1 : (a.getBrand()).localeCompare(b.getBrand()))
+            }
             >{(thread: IThread) =>
                 <div onClick={() => {
                     setSelectedThread(thread)
                     setShowEditSwatchModal(true)
                 }}>
-                    <ColorSwatch thread={thread} deleteMode={deleteMode()} />
+                    <ColorSwatch thread={thread} />
                 </div>}
             </For>
         </div>

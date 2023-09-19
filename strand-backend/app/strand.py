@@ -171,24 +171,54 @@ def add_classic_colorworks_thread(session, color, description, keywords, dmc_cod
 #dbsession.commit() 
 
 def update_dmc_thread(session, data):
-    print(data)
     session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==data['dmc_code']).values(data))
 
     session.commit()   
 
 def update_anchor_thread(session, data):
-    print(data)
-    session.execute(update(models.AnchorThread).where(models.AnchorThread.anchor_code==data['anchor_code']).values(data))
+    if (data['dmc_code'] is not None):
+            dmc_thread = session.query(models.DmcThread).get(data['dmc_code']) or None
+            if dmc_thread: 
+                arr = session.query(models.DmcThread).get(data['dmc_code']).anchor_codes or None
+                if data['anchor_code'] not in arr:
+                    arr.append(int(data['anchor_code']))
+                session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==data['dmc_code']).values({'color':data['color'], 'keywords':data['keywords'], 'anchor_codes':arr}))
+
+    #remove code
+    if (('remove_dmc' in data )and (data['remove_dmc'] is not None)):
+        print('remove dmc_code')
+        c = data['remove_dmc']
+        arr = session.query(models.DmcThread).get(c).anchor_codes
+        arr.remove(data['anchor_code']) # remove this wdw thread from the dmc thread array
+        session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==c).values({'color':data['color'],'anchor_codes':arr, 'keywords':data['keywords']}))
     
-    session.commit()   
+        del data['remove_dmc']
+    
+    session.execute(update(models.AnchorThread).where(models.AnchorThread.anchor_code==data['anchor_code']).values(data))
+    session.commit()    
+
 
 def update_weeks_dye_works_thread(session, data):
-    print(data)
-    session.execute(update(models.WeeksDyeWorksThread).where(models.WeeksDyeWorksThread.description==data['description']).values(data))
-    """     if (data['dmc_code']):
-        del data['description'] #dont want to change dmc_description in dmc table
-        session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==data['dmc_code']).values(data)) """
+    if (data['dmc_code'] is not None):
+            print('add dmc_code')
+            dmc_thread = session.query(models.DmcThread).get(data['dmc_code']) or None
+            if dmc_thread:
+                arr = session.query(models.DmcThread).get(data['dmc_code']).weeks_dye_works
+                if data['description'] not in arr:
+                    arr.append(data['description'])
+                session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==data['dmc_code']).values({'color':data['color'], 'keywords':data['keywords'], 'weeks_dye_works':arr}))
 
+    #remove code
+    if (('remove_dmc' in data )and (data['remove_dmc'] is not None)):
+        print('remove dmc_code')
+        c = data['remove_dmc']
+        arr = session.query(models.DmcThread).get(c).weeks_dye_works
+        arr.remove(data['description']) # remove this wdw thread from the dmc thread array
+        session.execute(update(models.DmcThread).where(models.DmcThread.dmc_code==c).values({'color':data['color'],'weeks_dye_works':arr, 'keywords':data['keywords']}))
+    
+    del data['remove_dmc']
+    
+    session.execute(update(models.WeeksDyeWorksThread).where(models.WeeksDyeWorksThread.description==data['description']).values(data))
     session.commit()    
 
 

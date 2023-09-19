@@ -1,16 +1,13 @@
 import axios from "axios"
 import { createEffect, createResource, createSignal, } from "solid-js"
-import { BrandMapping, ThreadBrandType, ThreadVariantType } from "../../Types"
 import { AnchorThread, ClassicColorworksThread, DmcThread, IThread, WeeksDyeWorksThread, getThread } from "../../Models"
-import { FiPlusCircle } from 'solid-icons/fi'
-import { AiOutlineDelete } from 'solid-icons/ai'
-import { IoCloseOutline } from 'solid-icons/io'
 import { KeywordInput } from "./Shared"
 
-
 const EditAnchorThread = ({ thread, mutate }: { thread: AnchorThread, mutate: any }) => {
-    const [keywords, setKeywords] = createSignal<string[]>(thread.getKeywords())
     const [color, setColor] = createSignal(thread.getColor())
+    const [keywords, setKeywords] = createSignal(thread.getKeywords())
+    const [dmcCode, setDmcCode] = createSignal(thread.getDmcCode())
+    const [checked, setChecked] = createSignal(!!dmcCode() && dmcCode() !== 0)
     const [desc, setDesc] = createSignal(thread.getDescription())
 
     //determine the other threads associated with the selected thread
@@ -18,15 +15,15 @@ const EditAnchorThread = ({ thread, mutate }: { thread: AnchorThread, mutate: an
 
     return <div class="flex flex-col self-start gap-3">
         <div class='flex flex-row items-center gap-1'>
-            <input checked={!!thread.getDmcCode()} type={'checkbox'} name='brand' />
+            <input checked={checked()} onChange={() => setChecked(!checked())} type={'checkbox'} name='brand' />
             <p>DMC</p>
-            {thread.getDmcCode() && <input
-                readonly
-                value={thread.getDmcCode()}
+            <input
+                value={dmcCode() === 0 ? '' : dmcCode()}
                 type={'text'}
                 class="rounded-md w-16 h-6  text-sm pl-1 placeholder:text-gray-300"
                 placeholder="#"
-            />}
+                onInput={(e) => setDmcCode(Number.parseInt(e.target.value))}
+            />
         </div>
         <div class='flex flex-row items-center gap-1'>
             <input
@@ -39,7 +36,6 @@ const EditAnchorThread = ({ thread, mutate }: { thread: AnchorThread, mutate: an
                 value={thread.getAnchorCode()}
                 type={'text'}
                 class="rounded-md w-16 h-6  text-sm pl-1 placeholder:text-gray-300"
-                placeholder="#"
             />
             <input
                 value={desc()}
@@ -57,16 +53,27 @@ const EditAnchorThread = ({ thread, mutate }: { thread: AnchorThread, mutate: an
         <KeywordInput keywords={keywords()} setKeywords={setKeywords} />
 
         <button
-            onClick={() => {
+            onClick={async () => {
+                const previousDmcCode = thread.getDmcCode()
+                const currentDmcCode = checked() ? dmcCode() : undefined
+                const updatedThread: AnchorThread = new AnchorThread(color(), thread.getAnchorCode(), desc(), keywords(), currentDmcCode);
+                const r = await getThread('dmc', currentDmcCode || 0);
+
+                (!!previousDmcCode && (!currentDmcCode || (!!currentDmcCode && (previousDmcCode !== currentDmcCode))))
+                    ? updatedThread.updateThread(previousDmcCode)
+                    : updatedThread.updateThread()
+
                 mutate((p: IThread[]) => {
-                    const updatedThread: AnchorThread = new AnchorThread(color(), thread.getAnchorCode(), desc(), keywords(), thread.getDmcCode())
-                    updatedThread.updateThread()
+                    const unchangedThreads = p.filter(t => ((t.getCode() !== (thread.getDmcCode() || thread.getAnchorCode()))))
 
-                    const unchangedThreads = p.filter(t => (t.getCode() !== thread.getAnchorCode()))
+                    if (r !== 'Not Found') {
+                        const dmcThread = new DmcThread(color(), currentDmcCode!, r.description, r.variant, keywords(), r.anchor_codes, r.weeks_dye_works, r.classic_colorworks)
+                        const isAddNeeded = !dmcThread.getAnchorCodes().includes(thread.getAnchorCode())
+                        isAddNeeded ? dmcThread.addAnchorCode(thread.getAnchorCode()) : null
 
-
+                        unchangedThreads.push(dmcThread)
+                    }
                     return [...unchangedThreads, updatedThread]
-
                 })
             }}
             class='w-1/4 self-end font-light uppercase hover:bg-green-600 bg-green-400 text-black rounded-sm disabled:opacity-60 disabled:bg-red-300'
