@@ -1,0 +1,4 @@
+/// <reference types="react" />
+import { BulletItemProps } from './types';
+export declare const BulletItem: ({ id, scale, layout, reverse, axisPosition, x, y, width, height, title, titlePosition, titleAlign, titleOffsetX, titleOffsetY, titleRotation, tooltip, rangeBorderColor, rangeBorderWidth, rangeComponent, rangeColors, ranges, measureBorderColor, measureBorderWidth, measureComponent, measureHeight, measureColors, measures, markerComponent, markerColors, markerHeight, markers, onRangeClick, onMeasureClick, onMarkerClick, }: BulletItemProps) => JSX.Element;
+//# sourceMappingURL=BulletItem.d.ts.map
