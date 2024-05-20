@@ -14,9 +14,12 @@ export const DmcThread = ({ thread: {
 
     return <View style={styles.threadContainer}>
         <View style={{ ...styles.threadWrapper, backgroundColor: color }} >
-            <TouchableOpacity style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }}>
-                <Text>+ library</Text>
+            {/* <TouchableOpacity style={{ backgroundColor: '#1d4ed8', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 100 }}>
+                <Text>+ Library</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={{ backgroundColor: '#f87171', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 100 }}>
+                <Text>+ Shopping list</Text>
+            </TouchableOpacity> */}
         </View>
         <Text style={styles.variantText}>{variant}</Text>
         <Text style={styles.brandText}>{`DMC ${code}`}</Text>
@@ -54,7 +57,9 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 10,
-        alignSelf: 'center',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     variantText: {
         textTransform: 'uppercase',
