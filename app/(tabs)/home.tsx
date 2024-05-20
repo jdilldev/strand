@@ -4,6 +4,7 @@ import { AnchorThread, DmcThread } from '../../components/Thread';
 import { DmcModel, ThreadType } from '@/types/types'
 import { supabase } from '@/lib/supabase';
 import { useCallback, useEffect, useState } from 'react';
+import { Header } from '@/components/Header';
 
 export default function AppRoot() {
   const [threads, setThreads] = useState<any[]>([]);
@@ -89,6 +90,7 @@ export default function AppRoot() {
 
   return (
     <SafeAreaView style={{ display: 'flex', flex: 1, padding: 5, backgroundColor: 'white' }}>
+      <Header />
       <TextInput
         style={styles.input}
         onChangeText={setSearchText}
