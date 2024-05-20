@@ -1,5 +1,6 @@
-import { View, Text, StyleProp, ViewStyle, StyleSheet } from 'react-native';
+import { View, Text, StyleProp, ViewStyle, StyleSheet, Button } from 'react-native';
 import { AnchorModel, DmcModel, ThreadType } from '@/types/types';
+import { TouchableOpacity } from 'react-native';
 
 export const DmcThread = ({ thread: {
     variant,
@@ -11,27 +12,47 @@ export const DmcThread = ({ thread: {
     keywords,
     weeksDyeWorks } }: { thread: DmcModel }) => {
 
-    return <View style={styles.contaner}>
-        <View style={styles.threadContainer} />
+    return <View style={styles.threadContainer}>
+        <View style={{ ...styles.threadWrapper, backgroundColor: color }} >
+            <TouchableOpacity style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100, width: 100 }}>
+                <Text>+ library</Text>
+            </TouchableOpacity>
+        </View>
         <Text style={styles.variantText}>{variant}</Text>
         <Text style={styles.brandText}>{`DMC ${code}`}</Text>
-        <Text>{description}</Text>
+        <Text style={styles.descriptionText}>{description}</Text>
     </View>
 }
 
+export const AnchorThread = ({ thread: {
+    variant = '6-strand',
+    color,
+    code,
+    description,
+    keywords,
+} }: { thread: AnchorModel }) => {
+
+    return <View style={styles.threadContainer}>
+        <View style={{ ...styles.threadWrapper, backgroundColor: color }} >
+        </View>
+        <Text style={styles.variantText}>{variant}</Text>
+        <Text style={styles.brandText}>{`Anchor ${code}`}</Text>
+        <Text style={styles.descriptionText}>{description}</Text>
+    </View>
+}
+
+
 const styles = StyleSheet.create({
-    contaner: {
+    threadContainer: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        gap: 1,
         width: 110,
-        padding: 5
+        padding: 5,
     },
-    threadContainer: {
+    threadWrapper: {
         width: 100,
         height: 100,
-        backgroundColor: 'red',
         borderRadius: 10,
         alignSelf: 'center',
     },
@@ -39,7 +60,8 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         paddingHorizontal: 3,
         paddingVertical: 1,
-        backgroundColor: 'red',
+        backgroundColor: '#bae6fd',
+        color: '#0369a1',
         width: 100,
         borderRadius: 5,
         textAlign: 'center',
@@ -47,6 +69,12 @@ const styles = StyleSheet.create({
         marginTop: 5
     },
     brandText: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        fontSize: 12,
+    },
+    descriptionText: {
+        fontSize: 11,
+        fontWeight: 'light',
+        height: 30
     }
 });

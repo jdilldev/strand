@@ -5,11 +5,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function LibraryScreen() {
-  return (
-    <SafeAreaView>
-      <Text>hi</Text>
-    </SafeAreaView>
-  );
+export default function ProjectsScreen() {
+    return (
+        <SafeAreaView>
+            <Text>projects</Text>
+        </SafeAreaView>
+    );
 }
 
