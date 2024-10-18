@@ -29,12 +29,24 @@ const _loadData = async () => {
 		!_isArray(classicColorworksThreads) ||
 		!_isArray(weeksDyeWorksThreads)
 	) {
+		console.error("Error retrieving all threads from the database");
 		throw Error("Error retrieving all threads from the database");
-		console.log("Error retrieving all threads from the database");
 	} else {
 		const allThreads: ThreadType[] = [];
 		dmcThreads.forEach((dmcThread) => {
 			const t = new DmcModel(dmcThread);
+			allThreads.push(t);
+		});
+		anchorThreads.forEach((anchorThread) => {
+			const t = new DmcModel(anchorThread);
+			allThreads.push(t);
+		});
+		classicColorworksThreads.forEach((classicColorworksThread) => {
+			const t = new DmcModel(classicColorworksThread);
+			allThreads.push(t);
+		});
+		weeksDyeWorksThreads.forEach((weeksDyeWorksThread) => {
+			const t = new DmcModel(weeksDyeWorksThread);
 			allThreads.push(t);
 		});
 	}
