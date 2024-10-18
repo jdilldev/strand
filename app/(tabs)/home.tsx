@@ -1,51 +1,47 @@
 import { SafeAreaView, } from 'react-native-safe-area-context';
-import { FlatList, ScrollView, StyleSheet, useWindowDimensions, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { FlatList, ScrollView, StyleSheet, useWindowDimensions, TextInput, View, TouchableOpacity } from 'react-native';
 import { AnchorThread, DmcThread } from '../../components/Thread';
-import { DmcModel, ThreadType } from '@/types/types'
+import { ThreadType } from '@/types/types'
 import { supabase } from '@/lib/supabase';
 import { useCallback, useEffect, useState } from 'react';
 import { Header } from '@/components/Header';
+import { Input } from '~/components/ui/input';
+import { Text } from '~/components/ui/text';
+import { Label } from '~/components/ui/label';
+import "../../global.css"
+import chroma from 'chroma-js';
+import { searchThreads } from '@/lib/expor';
 
 export default function AppRoot() {
-  const [threads, setThreads] = useState<any[]>([]);
   const [filteredThreads, setFilteredThreads] = useState<any[]>([]);
 
   const [searchText, setSearchText] = useState('');
 
+  const onChangeText = (text: string) => {
+    setSearchText(text);
+  };
+
+
   useEffect(() => {
     (async function main() {
-      const { data: dmcThreads } = await supabase.from('dmc').select()
-      const { data: anchorThreads } = await supabase.from('anchor').select()
-
-      if (dmcThreads && anchorThreads) {
-        setThreads(dmcThreads.concat(anchorThreads))
-        setFilteredThreads(dmcThreads.concat(anchorThreads))
-      }
+      const initialThreads = await searchThreads(searchText)
+      setFilteredThreads(initialThreads)
     })();
   }, [])
   const { width } = useWindowDimensions();
 
 
   useEffect(() => {
-    const search = searchText.toLowerCase()
+    const searchTextToLowerCase = searchText.toLowerCase();
 
-    const filteredThreads = threads.filter(t => {
-      const description = String(t.description).toLowerCase()
-      const brand = String(t.brand).toLowerCase()
-      const code = String(t.code).toLowerCase()
-      const brandAndCode = `${brand} ${code}`
-      const keywords: string[] = t.keywords
+    (async function main() {
+      const filtered = await searchThreads(searchText)
+      setFilteredThreads(filtered)
+    })();
 
-      return description.includes(search) ||
-        brand.includes(search) ||
-        code.includes(search) ||
-        brandAndCode.includes(search) ||
-        keywords.includes(search)
-    })
-
-    //console.log(filteredThreads)
     setFilteredThreads(filteredThreads)
   }, [searchText])
+
 
 
   const GridView = () => {
@@ -59,12 +55,13 @@ export default function AppRoot() {
         gap: 10
       }}
     >
-      {filteredThreads.map((t, i) => {
-        if (t.brand === 'dmc')
-          return <DmcThread key={'dmc' + i} thread={t} />
-        else if (t.brand === 'anchor')
-          return <AnchorThread key={'anchor' + i} thread={t} />
-      })}
+      {
+        filteredThreads.map((t, i) => {
+          if (t.brand === 'dmc')
+            return <DmcThread key={'dmc' + i} thread={t} />
+          else if (t.brand === 'anchor')
+            return <AnchorThread key={'anchor' + i} thread={t} />
+        })}
     </ScrollView>
   }
 
@@ -91,12 +88,13 @@ export default function AppRoot() {
   return (
     <SafeAreaView style={{ display: 'flex', flex: 1, padding: 5, backgroundColor: 'white' }}>
       <Header />
-      <TextInput
-        style={styles.input}
-        onChangeText={setSearchText}
+      <Input
+        placeholder='Write some stuff...'
         value={searchText}
-        placeholder='Search'
-        placeholderTextColor={'gray'}
+        onChangeText={onChangeText}
+        aria-labelledby='inputLabel'
+        aria-errormessage='inputError'
+        style={{ padding: 10 }}
       />
       <ListView />
     </SafeAreaView>

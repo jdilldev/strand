@@ -1,21 +1,19 @@
-type Brand = "dmc" | "anchor" | "weeksDyeWorks" | "classicColorworks";
-type Variant = "6-strand" | "variegated" | "satin" | "diamant" | "metallic";
+export type Brand = "dmc" | "anchor" | "weeksDyeWorks" | "classicColorworks";
+export type Variant =
+	| "6-strand"
+	| "variegated"
+	| "satin"
+	| "diamant"
+	| "metallic";
 
 export interface ThreadType {
-	brand: Brand;
 	description: string;
+	brand: Brand;
+	variant: Variant;
 	color: string;
 	keywords: string[];
-	variant: Variant;
+	getSearchableFields: () => string[];
 }
-
-export type DmcModel = ThreadType & {
-	brand: "dmc";
-	code: number;
-	classicColorworks: string;
-	anchorCodes: number[];
-	weeksDyeWorks: string[];
-};
 
 export type AnchorModel = ThreadType & {
 	brand: "anchor";

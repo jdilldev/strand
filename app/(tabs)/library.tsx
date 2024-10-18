@@ -1,7 +1,7 @@
 import { SafeAreaView, } from 'react-native-safe-area-context';
 import { FlatList, ScrollView, StyleSheet, useWindowDimensions, Text, TextInput, View, TouchableOpacity } from 'react-native';
 import { AnchorThread, DmcThread } from '../../components/Thread';
-import { DmcModel, ThreadType } from '@/types/types'
+import { ThreadType } from '@/types/types'
 import { supabase } from '@/lib/supabase';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -42,7 +42,6 @@ export default function LibraryScreen() {
         keywords.includes(search)
     })
 
-    //console.log(filteredThreads)
     setFilteredThreads(filteredThreads)
   }, [searchText])
 
@@ -54,7 +53,7 @@ export default function LibraryScreen() {
         flexWrap: 'wrap',
         flexDirection: 'row',
         width: width,
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         gap: 10
       }}
     >

@@ -1,6 +1,7 @@
-import { View, Text, StyleProp, ViewStyle, StyleSheet, Button } from 'react-native';
-import { AnchorModel, DmcModel, ThreadType } from '@/types/types';
+import { View, Text, StyleProp, ViewStyle, StyleSheet, Button, TouchableHighlight } from 'react-native';
+import { AnchorModel, ThreadType } from '@/types/types';
 import { TouchableOpacity } from 'react-native';
+import { DmcModel } from '@/types/DmcModel';
 
 export const DmcThread = ({ thread: {
     variant,
@@ -21,7 +22,7 @@ export const DmcThread = ({ thread: {
                 <Text>+ Shopping list</Text>
             </TouchableOpacity> */}
         </View>
-        <Text style={styles.variantText}>{variant}</Text>
+        <TouchableHighlight style={styles.variantTextWrapper}><Text style={styles.variantText}>{variant}</Text></TouchableHighlight>
         <Text style={styles.brandText}>{`DMC ${code}`}</Text>
         <Text style={styles.descriptionText}>{description}</Text>
     </View>
@@ -61,17 +62,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    variantText: {
-        textTransform: 'uppercase',
+    variantTextWrapper: {
+        borderRadius: 10,
+        backgroundColor: '#bae6fd',
+        marginTop: 5,
+        width: 100,
         paddingHorizontal: 3,
         paddingVertical: 1,
-        backgroundColor: '#bae6fd',
+
+    },
+    variantText: {
+        textTransform: 'uppercase',
         color: '#0369a1',
-        width: 100,
-        borderRadius: 5,
         textAlign: 'center',
         letterSpacing: 1.2,
-        marginTop: 5
     },
     brandText: {
         fontWeight: 'bold',
