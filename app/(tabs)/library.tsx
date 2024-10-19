@@ -1,9 +1,10 @@
 import { SafeAreaView, } from 'react-native-safe-area-context';
 import { FlatList, ScrollView, StyleSheet, useWindowDimensions, Text, TextInput, View, TouchableOpacity } from 'react-native';
-import { AnchorThread, DmcThread } from '../../components/Thread';
+import { AnchorThread, DmcThread, Thread } from '../../components/Thread';
 import { ThreadType } from '@/types/types'
 import { supabase } from '@/lib/supabase';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { AppContext } from '../state/AppContext';
 
 export default function LibraryScreen() {
   const [threads, setThreads] = useState<any[]>([]);
@@ -47,6 +48,7 @@ export default function LibraryScreen() {
 
 
   const GridView = () => {
+    const context = useContext(AppContext)
     return <ScrollView
       contentContainerStyle={{
         display: 'flex',
@@ -57,12 +59,7 @@ export default function LibraryScreen() {
         gap: 10
       }}
     >
-      {filteredThreads.map((t, i) => {
-        if (t.brand === 'dmc')
-          return <DmcThread key={'dmc' + i} thread={t} />
-        else if (t.brand === 'anchor')
-          return <AnchorThread key={'anchor' + i} thread={t} />
-      })}
+      {context?.allThreads.map((t, i) => <Thread key={i} thread={t} />)}
     </ScrollView>
   }
 

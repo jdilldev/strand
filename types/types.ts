@@ -13,9 +13,10 @@ export interface ThreadType {
 	color: string;
 	keywords: string[];
 	getSearchableFields: () => string[];
+	getBrandText: () => string;
 }
 
-export type AnchorModel = ThreadType & {
+export type AnchorModell = ThreadType & {
 	brand: "anchor";
 	code: number;
 	dmcCode: number;

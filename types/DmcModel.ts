@@ -37,4 +37,6 @@ export class DmcModel implements ThreadType {
 
 		return searchableFields;
 	};
+
+	getBrandText = () => `DMC ${this.code}`;
 }

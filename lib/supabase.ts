@@ -1,9 +1,10 @@
 import "react-native-url-polyfill/auto";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createClient } from "@supabase/supabase-js";
 import { ThreadType } from "@/types/types";
 import { DmcModel } from "@/types/DmcModel";
-//import { Database } from "./database.types";
+import { AnchorModel } from "@/types/AnchorModel";
+import { ClassicColorworksModel } from "@/types/ClassicColoworksModel";
+import { WeeksDyeWorksModel } from "@/types/WeeksDyeWorksModel";
 
 const supabaseUrl = "https://xkgwsoiuzhaeuoagbzco.supabase.co";
 const supabaseAnonKey =
@@ -13,7 +14,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 const _isArray = (potentialArr: any) => Array.isArray(potentialArr);
 
-const _loadData = async () => {
+export const loadData = async () => {
 	const { data: dmcThreads } = await supabase.from("dmc").select();
 	const { data: anchorThreads } = await supabase.from("anchor").select();
 	const { data: classicColorworksThreads } = await supabase
@@ -38,20 +39,18 @@ const _loadData = async () => {
 			allThreads.push(t);
 		});
 		anchorThreads.forEach((anchorThread) => {
-			const t = new DmcModel(anchorThread);
+			const t = new AnchorModel(anchorThread);
 			allThreads.push(t);
 		});
 		classicColorworksThreads.forEach((classicColorworksThread) => {
-			const t = new DmcModel(classicColorworksThread);
+			const t = new ClassicColorworksModel(classicColorworksThread);
 			allThreads.push(t);
 		});
 		weeksDyeWorksThreads.forEach((weeksDyeWorksThread) => {
-			const t = new DmcModel(weeksDyeWorksThread);
+			const t = new WeeksDyeWorksModel(weeksDyeWorksThread);
 			allThreads.push(t);
 		});
+
+		return allThreads;
 	}
 };
-
-_loadData();
-
-//console.log(supabase);

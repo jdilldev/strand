@@ -26,4 +26,6 @@ export class WeeksDyeWorksModel implements ThreadType {
 
 		return searchableFields;
 	};
+
+	getBrandText = () => `Weeks Dye Works`;
 }

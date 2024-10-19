@@ -29,4 +29,6 @@ export class AnchorModel implements ThreadType {
 
 		return searchableFields;
 	};
+
+	getBrandText = () => `Anchor ${this.code}`;
 }

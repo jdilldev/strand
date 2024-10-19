@@ -27,4 +27,6 @@ export class ClassicColorworksModel implements ThreadType {
 
 		return searchableFields;
 	};
+
+	getBrandText = () => `Classic Colorworks`;
 }

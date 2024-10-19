@@ -1,7 +1,16 @@
-import { View, Text, StyleProp, ViewStyle, StyleSheet, Button, TouchableHighlight } from 'react-native';
-import { AnchorModel, ThreadType } from '@/types/types';
-import { TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableHighlight, } from 'react-native';
+import { ThreadType } from '@/types/types';
 import { DmcModel } from '@/types/DmcModel';
+import { AnchorModel } from '@/types/AnchorModel';
+
+export const Thread = ({ thread }: { thread: ThreadType }) =>
+    <View style={styles.threadContainer}>
+        <View style={{ ...styles.threadWrapper, backgroundColor: thread.color }} >
+        </View>
+        <TouchableHighlight style={styles.variantTextWrapper}><Text style={styles.variantText}>{thread.variant}</Text></TouchableHighlight>
+        <Text style={styles.brandText}>{thread.getBrandText()}</Text>
+        <Text style={styles.descriptionText}>{thread.description}</Text>
+    </View>
 
 export const DmcThread = ({ thread: {
     variant,
@@ -15,15 +24,9 @@ export const DmcThread = ({ thread: {
 
     return <View style={styles.threadContainer}>
         <View style={{ ...styles.threadWrapper, backgroundColor: color }} >
-            {/* <TouchableOpacity style={{ backgroundColor: '#1d4ed8', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 100 }}>
-                <Text>+ Library</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{ backgroundColor: '#f87171', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 100 }}>
-                <Text>+ Shopping list</Text>
-            </TouchableOpacity> */}
         </View>
-        <TouchableHighlight style={styles.variantTextWrapper}><Text style={styles.variantText}>{variant}</Text></TouchableHighlight>
-        <Text style={styles.brandText}>{`DMC ${code}`}</Text>
+        <Text style={styles.variantText}>{variant}</Text>
+        <Text style={styles.brandText}>{`Anchor ${code}`}</Text>
         <Text style={styles.descriptionText}>{description}</Text>
     </View>
 }
