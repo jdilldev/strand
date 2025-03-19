@@ -1,6 +1,6 @@
 import { SafeAreaView, } from 'react-native-safe-area-context';
 import { FlatList, ScrollView, StyleSheet, useWindowDimensions, TextInput, View, TouchableOpacity } from 'react-native';
-import { AnchorThread, DmcThread, Thread } from '../../components/Thread';
+import { Thread } from '../../components/Thread';
 import { useContext, useEffect, useState } from 'react';
 import { Header } from '@/components/Header';
 import { Input } from '~/components/ui/input';
@@ -10,6 +10,7 @@ import { searchThreads } from '@/lib/expor';
 import { DmcModel } from '@/types/DmcModel';
 import { AppContext } from '../state/AppContext';
 import { AppState } from 'react-native';
+import { Pressable } from 'react-native';
 
 export default function AppRoot() {
   const [filteredThreads, setFilteredThreads] = useState<any[]>([]);
@@ -44,16 +45,16 @@ export default function AppRoot() {
 
   const ListView = () => {
     return <FlatList
-      contentContainerStyle={{ display: 'flex', flexDirection: 'column', gap: 10 }}
+      contentContainerStyle={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 5 }}
       data={context?.allThreads}
       renderItem={({ item }) => <View style={{ display: 'flex', flexDirection: 'row', gap: 20, borderBottomColor: 'lightgray', borderBottomWidth: 1, padding: 5 }}>
-        <TouchableOpacity style={{ borderRadius: 50, backgroundColor: '#1d4ed8', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 70 }}>
+        <Pressable style={{ borderRadius: 50, backgroundColor: '#1d4ed8', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 70 }}>
           <Text style={{ color: 'white' }}>+ Library</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Thread thread={item} />
-        <TouchableOpacity style={{ borderRadius: 50, backgroundColor: '#f87171', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 110 }}>
+        <Pressable style={{ borderRadius: 50, backgroundColor: '#f87171', display: 'flex', justifyContent: 'center', alignItems: 'center', height: 20, width: 110 }}>
           <Text style={{ color: 'white' }}>+ Shopping list</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>}
     />
   }
@@ -68,7 +69,7 @@ export default function AppRoot() {
         onChangeText={onChangeText}
         aria-labelledby='inputLabel'
         aria-errormessage='inputError'
-        style={{ padding: 10 }}
+        style={{ padding: 10, borderRadius: 20 }}
       />
       <ListView />
     </SafeAreaView>

@@ -51,6 +51,19 @@ export const loadData = async () => {
 			allThreads.push(t);
 		});
 
+		const k: string[] = [];
+		console.log(
+			allThreads.forEach((thread) => {
+				if (thread.keywords) {
+					thread.keywords.forEach((keyword) => {
+						if (!k.includes(keyword)) {
+							k.push(keyword);
+						}
+					});
+				}
+			})
+		);
+		console.log(k);
 		return allThreads;
 	}
 };

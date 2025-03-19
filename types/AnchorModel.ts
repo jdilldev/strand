@@ -22,10 +22,9 @@ export class AnchorModel implements ThreadType {
 
 		searchableFields.push(String(this.code));
 		searchableFields.push(String(this.dmc_code));
-		searchableFields.push(this.color);
 		searchableFields.push(this.description);
 		searchableFields.push(this.brand);
-		searchableFields.push(...this.keywords);
+		this.keywords && searchableFields.push(...this.keywords);
 
 		return searchableFields;
 	};

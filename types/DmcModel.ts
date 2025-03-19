@@ -24,16 +24,18 @@ export class DmcModel implements ThreadType {
 	getSearchableFields = () => {
 		const searchableFields: string[] = [];
 
-		searchableFields.push(this.color);
 		searchableFields.push(String(this.code));
 		searchableFields.push(this.brand);
-		searchableFields.push(this.classicColorworks);
-		searchableFields.push(...this.weeksDyeWorks);
-		searchableFields.push(...this.keywords);
+		searchableFields.push(this.description.toLowerCase());
+		this.classicColorworks && searchableFields.push(this.classicColorworks);
+		this.weeksDyeWorks && searchableFields.push(...this.weeksDyeWorks);
+		if (this.keywords) searchableFields.push(...this.keywords);
 
-		this.anchorCodes.forEach((anchorCode) =>
-			searchableFields.push(String(anchorCode))
-		);
+		if (Array.isArray(this.anchorCodes)) {
+			this.anchorCodes.forEach((anchorCode) =>
+				searchableFields.push(String(anchorCode))
+			);
+		}
 
 		return searchableFields;
 	};

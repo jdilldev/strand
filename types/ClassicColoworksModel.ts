@@ -19,11 +19,13 @@ export class ClassicColorworksModel implements ThreadType {
 		const searchableFields: string[] = [];
 
 		searchableFields.push(this.description);
-		searchableFields.push(this.color);
 		searchableFields.push(this.brand);
-		searchableFields.push(...this.keywords);
+		this.keywords && searchableFields.push(...this.keywords);
 
-		this.dmcCodes.forEach((dmcCode) => searchableFields.push(String(dmcCode)));
+		if (this.dmcCodes)
+			this.dmcCodes.forEach((dmcCode) =>
+				searchableFields.push(String(dmcCode))
+			);
 
 		return searchableFields;
 	};
