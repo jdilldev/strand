@@ -9,6 +9,10 @@ export default function AppRoot() {
   const [searchText, setSearchText] = useState<string>("");
 
   const isThreadMatch = (thread: any) => {
+    const conidtionalData = thread.dmc_codes
+      ? thread.dmc_codes
+      : thread.classic_colorworks_codes;
+    thread.code = conidtionalData ? conidtionalData.join(", ") : thread.code;
     const keywords = (thread.keywords || []).concat([
       thread.description,
       thread.brand,
@@ -45,16 +49,25 @@ export default function AppRoot() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, margin: 10 }}>
+      <SafeAreaView style={{ display: "flex", flex: 1, alignItems: "center" }}>
         <TextInput
-          style={{ borderColor: "black", borderWidth: 1, borderRadius: 3 }}
+          style={{
+            borderColor: "black",
+            borderWidth: 1,
+            borderRadius: 3,
+            width: "90%",
+            padding: 5,
+          }}
           value={searchText}
           onChangeText={setSearchText}
         />
         <FlatList
+          style={{
+            display: "flex",
+            alignSelf: "flex-start",
+            marginHorizontal: 10,
+          }}
           numColumns={3}
-          contentContainerStyle={{ flexGrow: 1, gap: 10 }}
-          style={{ margin: 10, flex: 1, width: "100%" }}
           keyExtractor={(item, index) => `${item.brand}-${item.code}-${index}`}
           data={
             searchText
@@ -62,10 +75,11 @@ export default function AppRoot() {
               : allThreads
           }
           renderItem={({ item }) => (
-            <View>
+            <View style={{ display: "flex" }}>
               <View
                 style={{
                   width: 100,
+                  maxWidth: 100,
                   height: 100,
                   backgroundColor: item.color,
                   borderRadius: 10,
@@ -77,14 +91,12 @@ export default function AppRoot() {
                 style={{
                   alignSelf: "center",
                   textAlign: "center",
-                  maxWidth: 100,
                   fontSize: 11,
+                  flexWrap: "wrap",
+                  width: 100,
                 }}
               >
-                {`${item.brand} ${item.code || ""}`}
-              </Text>
-              <Text style={{ textAlign: "center", fontSize: 11 }}>
-                {`${item.description}`}
+                {`${item.brand} ${item.code || ""}\n${item.description}`}
               </Text>
             </View>
           )}
