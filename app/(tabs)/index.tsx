@@ -38,9 +38,7 @@ export default function AppRoot() {
           numColumns={3}
           contentContainerStyle={{ flexGrow: 1, gap: 10 }}
           style={{ margin: 10, flex: 1, width: "100%" }}
-          keyExtractor={(item, index) =>
-            `${item.brand as string}-${item.code}-${index}`
-          }
+          keyExtractor={(item, index) => `${item.brand}-${item.code}-${index}`}
           data={allThreads}
           renderItem={({ item }) => (
             <View>
@@ -54,8 +52,18 @@ export default function AppRoot() {
                   marginBottom: 1,
                 }}
               />
-              <Text style={{ textAlign: "center" }}>
-                {item.brand} {item.code}
+              <Text
+                style={{
+                  alignSelf: "center",
+                  textAlign: "center",
+                  maxWidth: 100,
+                  fontSize: 12,
+                }}
+              >
+                {`${item.brand}`}
+              </Text>
+              <Text style={{ textAlign: "center", fontSize: 12 }}>
+                {item.code || item.description}
               </Text>
             </View>
           )}
