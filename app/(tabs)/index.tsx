@@ -1,11 +1,23 @@
 import { getSupabaseClient } from "@/utils/supabase";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function AppRoot() {
   const supabase = getSupabaseClient();
   const [allThreads, setAllThreads] = useState<any[]>([]);
+  const [searchText, setSearchText] = useState<string>("");
+
+  const isThreadMatch = (thread: any) => {
+    const keywords = (thread.keywords || []).concat([
+      thread.description,
+      thread.brand,
+    ]);
+
+    return keywords.some((keyword: string) =>
+      keyword.toLowerCase().includes(searchText.toLowerCase())
+    );
+  };
 
   useEffect(() => {
     async function getTodos() {
@@ -33,13 +45,22 @@ export default function AppRoot() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, margin: 10 }}>
+        <TextInput
+          style={{ borderColor: "black", borderWidth: 1, borderRadius: 3 }}
+          value={searchText}
+          onChangeText={setSearchText}
+        />
         <FlatList
           numColumns={3}
           contentContainerStyle={{ flexGrow: 1, gap: 10 }}
           style={{ margin: 10, flex: 1, width: "100%" }}
           keyExtractor={(item, index) => `${item.brand}-${item.code}-${index}`}
-          data={allThreads}
+          data={
+            searchText
+              ? allThreads.filter((thread) => isThreadMatch(thread))
+              : allThreads
+          }
           renderItem={({ item }) => (
             <View>
               <View
@@ -57,13 +78,13 @@ export default function AppRoot() {
                   alignSelf: "center",
                   textAlign: "center",
                   maxWidth: 100,
-                  fontSize: 12,
+                  fontSize: 11,
                 }}
               >
-                {`${item.brand}`}
+                {`${item.brand} ${item.code || ""}`}
               </Text>
-              <Text style={{ textAlign: "center", fontSize: 12 }}>
-                {item.code || item.description}
+              <Text style={{ textAlign: "center", fontSize: 11 }}>
+                {`${item.description}`}
               </Text>
             </View>
           )}
