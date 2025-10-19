@@ -19,7 +19,11 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color, focused }) => (
-            <TabIcon name={"space-dashboard"} color={color} />
+            <TabIcon
+              size={28}
+              icon={{ type: "material", name: "space-dashboard" }}
+              color={color}
+            />
           ),
         }}
       />

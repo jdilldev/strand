@@ -1,13 +1,26 @@
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { type IconProps } from "@expo/vector-icons/build/createIconSet";
-import { type ComponentProps } from "react";
+import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 
-export function TabIcon({
-  name,
-  style,
-  ...rest
-}: IconProps<ComponentProps<typeof MaterialIcons>["name"]>) {
-  return <MaterialIcons name={name} size={28} style={style} {...rest} />;
+type IconName =
+  | { type: "material"; name: keyof typeof MaterialIcons.glyphMap }
+  | { type: "ionic"; name: keyof typeof Ionicons.glyphMap }
+  | { type: "fontAwesome"; name: keyof typeof FontAwesome.glyphMap };
+
+interface TabIconProps {
+  icon: IconName;
+  size: number;
+  color?: string;
+}
+export function TabIcon({ icon, size, color, ...rest }: TabIconProps) {
+  switch (icon.type) {
+    case "material":
+      return <MaterialIcons name={icon.name} size={size} color={color} />;
+    case "ionic":
+      return <Ionicons name={icon.name} size={size} color={color} />;
+    case "fontAwesome":
+      return <FontAwesome name={icon.name} size={size} color={color} />;
+    default:
+      return null;
+  }
 }
