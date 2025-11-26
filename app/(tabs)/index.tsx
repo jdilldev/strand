@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/utils/supabase";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
