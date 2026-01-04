@@ -2,9 +2,9 @@ import ThemedButton from "@/components/ui/ThemedButton";
 import { ThemedInput } from "@/components/ui/ThemedInput";
 import ThemedText from "@/components/ui/ThemedText";
 import { getSupabaseClient } from "@/utils/supabase";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 const getBrandDisplayName = (brand: string) => {
@@ -22,24 +22,46 @@ const getBrandDisplayName = (brand: string) => {
   }
 };
 
+const getThreadCodes = (thread: any) => {
+  const codes: string[] = [];
+
+  if (thread.dmc_codes) {
+    codes.concat(thread.dmc_codes);
+  }
+  if (thread.dmc_code) {
+    codes.push(thread.dmc_code);
+  }
+
+  if (thread.anchor_codes) {
+    codes.concat(thread.anchor_codes);
+  }
+
+  if (thread.code) {
+    codes.push(thread.code);
+  }
+
+  return codes;
+};
+
 export default function AppRoot() {
   const supabase = getSupabaseClient();
   const [allThreads, setAllThreads] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const isThreadMatch = (thread: any) => {
-    const conidtionalData = thread.dmc_codes
-      ? thread.dmc_codes
-      : thread.classic_colorworks_codes;
-    thread.code = conidtionalData ? conidtionalData.join(", ") : thread.code;
-    const keywords = (thread.keywords || []).concat([
-      thread.description,
-      thread.brand,
-    ]);
+    const threadCodes = getThreadCodes(thread);
 
-    return keywords.some((keyword: string) =>
-      keyword.toLowerCase().includes(searchText.toLowerCase())
+    const keywords = (thread.keywords || [])
+      .concat([thread.description.replace(/ /g, ""), thread.brand])
+      .concat(threadCodes ?? []);
+
+    console.log(keywords);
+    return keywords.some(
+      (keyword: string | number) =>
+        String(keyword)
+          .toLowerCase()
+          .includes(searchText.replace(/ /g, "").toLowerCase()) // ignore spaces and case in search
     );
   };
 
@@ -70,7 +92,11 @@ export default function AppRoot() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ display: "flex", flex: 1, alignItems: "center" }}>
-        <ThemedInput value={searchText} onChangeText={setSearchText} />
+        <ThemedInput
+          placeholder="Search for threads"
+          value={searchText}
+          onChangeText={setSearchText}
+        />
         <FlatList
           style={{
             display: "flex",
@@ -98,9 +124,16 @@ export default function AppRoot() {
                 }}
                 // eslint-disable-next-line react/no-children-prop
                 children={null}
-                onPress={() =>
-                  navigation.navigate("ThreadDetails", { thread: item })
-                }
+                onPress={() => {
+                  console.log("Pressed", item.brand, item.code);
+                  router.push({
+                    pathname: "/threads/[brand]/[id]",
+                    params: {
+                      brand: String(item.brand),
+                      id: String(item.code),
+                    },
+                  });
+                }}
               />
               <ThemedText
                 style={{
@@ -122,7 +155,3 @@ export default function AppRoot() {
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  input: {},
-});

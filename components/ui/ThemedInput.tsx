@@ -1,4 +1,5 @@
 import { useThemeColor } from "@/hooks/use-theme-color";
+import { EvilIcons } from "@expo/vector-icons";
 import {
   StyleSheet,
   Text,
@@ -10,9 +11,12 @@ import {
 type ThemedInputProps = TextInputProps & {
   label?: string;
   error?: string;
+  placeholder?: string;
+  showSearchIcon?: boolean;
 };
 
 export function ThemedInput({
+  placeholder,
   label,
   error,
   style,
@@ -23,13 +27,19 @@ export function ThemedInput({
   const errorColor = useThemeColor({}, "error");
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { borderColor: textColor }]}>
       {label && (
         <Text style={[styles.label, { color: textColor }]}>{label}</Text>
       )}
-
+      <EvilIcons
+        style={styles.searchIcon}
+        name={"search"}
+        size={24}
+        color={textColor}
+      />
       <TextInput
         {...props}
+        placeholder={placeholder}
         placeholderTextColor={`${textColor}99`}
         style={[
           styles.input,
@@ -37,7 +47,7 @@ export function ThemedInput({
             color: textColor,
             backgroundColor: primaryColor,
             borderColor: error ? errorColor : textColor,
-            fontFamily: "SourceSans3",
+            fontFamily: "SourceSans3-Light",
           },
           style,
         ]}
@@ -53,20 +63,28 @@ export function ThemedInput({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
-    borderRadius: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
     width: "90%",
   },
   label: {
     marginBottom: 6,
     fontSize: 14,
     fontWeight: "500",
+    flex: 0.1,
+  },
+  searchIcon: {
+    //flex: 0.1,
   },
   input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
     fontSize: 16,
+    flex: 0.9,
   },
   error: {
     marginTop: 4,

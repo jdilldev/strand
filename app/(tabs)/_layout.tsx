@@ -4,6 +4,7 @@ import { TabIcon } from "@/components/navigation/TabIcon";
 import { useThemeColor } from "@/hooks/use-theme-color";
 
 export default function TabLayout() {
+  const textColor = useThemeColor({}, "text");
   const primaryColor = useThemeColor({}, "primary");
 
   return (
@@ -12,6 +13,12 @@ export default function TabLayout() {
         tabBarActiveTintColor: primaryColor, // Active label color
         tabBarInactiveTintColor: "#888888", // Inactive label color
         headerShown: false,
+        headerShadowVisible: false,
+        headerStyle: { backgroundColor: primaryColor },
+        headerTintColor: textColor,
+        headerTitleStyle: {
+          fontFamily: "SourceSans3-Bold",
+        },
         tabBarLabelStyle: {
           fontFamily: "SourceSans3",
         },
@@ -24,7 +31,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: "Home",
-          headerShown: false,
+          headerShown: true,
           tabBarIcon: ({ color }) => (
             <TabIcon
               size={28}
@@ -48,9 +55,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="library"
+        name="threads"
         options={{
           title: "Library",
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <TabIcon
               size={24}

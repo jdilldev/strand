@@ -44,73 +44,7 @@
           }
         }
       ],
-      [
-        "expo-font",
-        {
-          "fonts": [
-            {
-              "path": "./assets/fonts/SourceSans3-Black.ttf",
-              "weight": "900",
-              "style": "black"
-            },
-            {
-              "path": "./assets/fonts/SourceSans3-ExtraBold.ttf",
-              "weight": "800",
-              "style": "heavy"
-            },
-            {
-              "path": "./assets/fonts/SourceSans3-Bold.ttf",
-              "weight": "700",
-              "style": "bold"
-            },
-            {
-              "path": "./assets/fonts/SourceSans3-SemiBold.ttf",
-              "weight": "600",
-              "style": "semibold"
-            },
-            {
-              "path": "./assets/fonts/SourceSans3-Medium.ttf",
-              "weight": "500",
-              "style": "medium"
-            },
-            {
-              "path": "./assets/fonts/SourceSans3-Regular.ttf",
-              "weight": "400",
-              "style": "normal"
-            },
-            {
-              "path": "./assets/fonts/SourceSans3-Light.ttf",
-              "weight": "300",
-              "style": "light"
-            },
-            {
-              "path": "./assets/fonts/SourceSans3-ExtraLight.ttf",
-              "weight": "200",
-              "style": "extralight"
-            },
-            {
-              "path": "./assets/fonts/ArchivoNarrow-Bold.ttf",
-              "weight": "700",
-              "style": "bold"
-            },
-            {
-              "path": "./assets/fonts/ArchivoNarrow-SemiBold.ttf",
-              "weight": "600",
-              "style": "semibold"
-            },
-            {
-              "path": "./assets/fonts/ArchivoNarrow-Medium.ttf",
-              "weight": "500",
-              "style": "medium"
-            },
-            {
-              "path": "./assets/fonts/ArchivoNarrow-Regular.ttf",
-              "weight": "400",
-              "style": "normal"
-            }
-          ]
-        }
-      ]
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true,
