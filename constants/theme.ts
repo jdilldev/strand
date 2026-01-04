@@ -5,49 +5,39 @@
 
 import { Platform } from "react-native";
 
-const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
-
-// #283059 primary for text and icons in bottom nav
-
 export const Colors = {
   light: {
-    text: "#283059",
-    background: "#fff",
-    tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
+    buttonPrimary: "rgb(116, 164, 162)",
+    buttonSecondary: "rgb(232, 176, 164)",
+    primary: "rgb(40, 48, 89)",
+    text: "rgb(253, 251, 229)",
+    error: "rgb(221, 45, 74)",
+    accent1: "rgb(255, 189, 124)",
+    accent2: "rgb(255, 149, 148)",
   },
   dark: {
-    text: "#ECEDEE",
-    background: "#151718",
-    tint: tintColorDark,
-    icon: "#9BA1A6",
-    tabIconDefault: "#9BA1A6",
-    tabIconSelected: tintColorDark,
+    buttonPrimary: "rgb(116, 164, 162)",
+    buttonSecondary: "rgb(232, 176, 164)",
+    primary: "rgb(40, 48, 89)",
+    text: "rgb(253, 251, 229)",
+    error: "rgb(221, 45, 74)",
+    accent1: "rgb(255, 189, 124)",
+    accent2: "rgb(255, 149, 148)",
   },
 };
 
 export const Fonts = Platform.select({
   ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: "system-ui",
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: "ui-serif",
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: "ui-rounded",
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: "ui-monospace",
+    sans: "SourceSans3",
   },
   default: {
-    sans: "normal",
+    sans: "SourceSans3",
     serif: "serif",
     rounded: "normal",
     mono: "monospace",
   },
   web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+    sans: "SourceSans3, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
     serif: "Georgia, 'Times New Roman', serif",
     rounded:
       "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",

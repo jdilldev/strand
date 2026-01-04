@@ -1,12 +1,32 @@
+import ThemedButton from "@/components/ui/ThemedButton";
+import { ThemedInput } from "@/components/ui/ThemedInput";
+import ThemedText from "@/components/ui/ThemedText";
 import { getSupabaseClient } from "@/utils/supabase";
-import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { useEffect, useState } from "react";
+import { FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+
+const getBrandDisplayName = (brand: string) => {
+  switch (brand) {
+    case "dmc":
+      return "DMC";
+    case "anchor":
+      return "Anchor";
+    case "classicColorworks":
+      return "Classic Colorworks";
+    case "weeksDyeWorks":
+      return "Weeks Dye Works";
+    default:
+      return brand;
+  }
+};
 
 export default function AppRoot() {
   const supabase = getSupabaseClient();
   const [allThreads, setAllThreads] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string>("");
+  const navigation = useNavigation();
 
   const isThreadMatch = (thread: any) => {
     const conidtionalData = thread.dmc_codes
@@ -50,17 +70,7 @@ export default function AppRoot() {
   return (
     <SafeAreaProvider>
       <SafeAreaView style={{ display: "flex", flex: 1, alignItems: "center" }}>
-        <TextInput
-          style={{
-            borderColor: "black",
-            borderWidth: 1,
-            borderRadius: 3,
-            width: "90%",
-            padding: 5,
-          }}
-          value={searchText}
-          onChangeText={setSearchText}
-        />
+        <ThemedInput value={searchText} onChangeText={setSearchText} />
         <FlatList
           style={{
             display: "flex",
@@ -76,7 +86,7 @@ export default function AppRoot() {
           }
           renderItem={({ item }) => (
             <View style={{ display: "flex" }}>
-              <View
+              <ThemedButton
                 style={{
                   width: 100,
                   maxWidth: 100,
@@ -86,8 +96,13 @@ export default function AppRoot() {
                   margin: 10,
                   marginBottom: 1,
                 }}
+                // eslint-disable-next-line react/no-children-prop
+                children={null}
+                onPress={() =>
+                  navigation.navigate("ThreadDetails", { thread: item })
+                }
               />
-              <Text
+              <ThemedText
                 style={{
                   alignSelf: "center",
                   textAlign: "center",
@@ -96,8 +111,10 @@ export default function AppRoot() {
                   width: 100,
                 }}
               >
-                {`${item.brand} ${item.code || ""}\n${item.description}`}
-              </Text>
+                {`${getBrandDisplayName(item.brand)} ${item.code || ""}\n${
+                  item.description
+                }`}
+              </ThemedText>
             </View>
           )}
         />

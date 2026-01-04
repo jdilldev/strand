@@ -1,111 +1,110 @@
-import { getSupabaseClient } from "@/utils/supabase";
-import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, TextInput, View } from "react-native";
+import React, { useCallback } from "react";
+import {
+  Alert,
+  Image,
+  Linking,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-export default function AppRoot() {
-  const supabase = getSupabaseClient();
-  const [allThreads, setAllThreads] = useState<any[]>([]);
-  const [searchText, setSearchText] = useState<string>("");
+const PROJECTS = [
+  { id: "1", name: "Apple", threads: [], thumbnail: "" },
+  { id: "2", name: "Banana", threads: [], thumbnail: "" },
+  { id: "3", name: "Orange", threads: [], thumbnail: "" },
+  { id: "4", name: "Mango", threads: [], thumbnail: "" },
+  { id: "5", name: "Pineapple", threads: [], thumbnail: "" },
+];
 
-  const isThreadMatch = (thread: any) => {
-    const conidtionalData = thread.dmc_codes
-      ? thread.dmc_codes
-      : thread.classic_colorworks_codes;
-    thread.code = conidtionalData ? conidtionalData.join(", ") : thread.code;
-    const keywords = (thread.keywords || []).concat([
-      thread.description,
-      thread.brand,
-    ]);
+const NavigateToPattern = ({ url }: { url: string }) => {
+  const handlePress = useCallback(async () => {
+    // Check if the device can open the URL (recommended)
+    const supported = await Linking.canOpenURL(url);
 
-    return keywords.some((keyword: string) =>
-      keyword.toLowerCase().includes(searchText.toLowerCase())
-    );
-  };
-
-  useEffect(() => {
-    async function getTodos() {
-      const threads: any[] = [];
-      const results = await Promise.all([
-        supabase.from("dmc").select(),
-        supabase.from("anchor").select(),
-        supabase.from("classic_colorworks").select(),
-        supabase.from("weeks_dye_works").select(),
-      ]);
-
-      results.forEach((result) => {
-        if (result.error) {
-          console.error("Error fetching data:", result.error);
-        } else {
-          threads.push(...result.data);
-        }
-      });
-
-      setAllThreads(threads);
+    if (supported) {
+      // Open the URL in the default browser
+      await Linking.openURL(url);
+    } else {
+      Alert.alert(`Don't know how to open this URL: ${url}`);
     }
+  }, [url]);
 
-    getTodos();
-  }, [supabase]);
+  return (
+    <TouchableOpacity onPress={handlePress}>
+      <Text style={{}}> Hyperlink to Pattern</Text>
+    </TouchableOpacity>
+  );
+};
+
+export default function ProjectsList() {
+  const renderItem = ({
+    item,
+  }: {
+    item: { id: string; name: string; threads: any[]; thumbnail: string };
+  }) => (
+    <View
+      style={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+    >
+      <Image
+        source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
+        style={{ width: 60, height: 60 }}
+      />
+      <Text style={styles.text}>{item.name}</Text>
+    </View>
+  );
+
+  // Julia Sans 1 - H1
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ display: "flex", flex: 1, alignItems: "center" }}>
-        <TextInput
-          style={{
-            borderColor: "black",
-            borderWidth: 1,
-            borderRadius: 3,
-            width: "90%",
-            padding: 5,
-          }}
-          value={searchText}
-          onChangeText={setSearchText}
-        />
+      <SafeAreaView style={{ display: "flex", flex: 1, padding: 16 }}>
+        {/* <Text style={{ fontWeight: "bold", fontSize: 18 }}>Projects</Text>
         <FlatList
-          style={{
-            display: "flex",
-            alignSelf: "flex-start",
-            marginHorizontal: 10,
-          }}
-          numColumns={3}
-          keyExtractor={(item, index) => `${item.brand}-${item.code}-${index}`}
-          data={
-            searchText
-              ? allThreads.filter((thread) => isThreadMatch(thread))
-              : allThreads
-          }
-          renderItem={({ item }) => (
-            <View style={{ display: "flex" }}>
-              <View
-                style={{
-                  width: 100,
-                  maxWidth: 100,
-                  height: 100,
-                  backgroundColor: item.color,
-                  borderRadius: 10,
-                  margin: 10,
-                  marginBottom: 1,
-                }}
-              />
-              <Text
-                style={{
-                  alignSelf: "center",
-                  textAlign: "center",
-                  fontSize: 11,
-                  flexWrap: "wrap",
-                  width: 100,
-                }}
-              >
-                {`${item.brand} ${item.code || ""}\n${item.description}`}
-              </Text>
-            </View>
-          )}
+          data={PROJECTS}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        /> */}
+        <Text style={{ textAlign: "center" }}>My Projects</Text>
+        <Text>Name of Project</Text>
+        <Text style={{ fontStyle: "italic" }}>Completion Date: 10/15/2025</Text>
+
+        <NavigateToPattern url={"https://example.com/pattern/"} />
+        <Image
+          source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
+          style={{ width: "100%", height: "20%" }}
         />
+        <Text>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </Text>
+        <View
+          style={{
+            width: "100%",
+            height: "20%",
+            backgroundColor: "lightgray",
+            padding: 10,
+            marginTop: 10,
+          }}
+        ></View>
       </SafeAreaView>
+      {/* Get the root page and render heading (should be dynamic and not hardcoded) */}
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  input: {},
+  list: {
+    padding: 16,
+  },
+  item: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
+  },
+  text: {
+    fontSize: 16,
+  },
 });

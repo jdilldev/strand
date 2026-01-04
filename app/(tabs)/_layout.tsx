@@ -1,20 +1,30 @@
 import { Tabs } from "expo-router";
-import React from "react";
 
 import { TabIcon } from "@/components/navigation/TabIcon";
+import { useThemeColor } from "@/hooks/use-theme-color";
 
 export default function TabLayout() {
+  const primaryColor = useThemeColor({}, "primary");
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "black",
+        tabBarActiveTintColor: primaryColor, // Active label color
+        tabBarInactiveTintColor: "#888888", // Inactive label color
         headerShown: false,
+        tabBarLabelStyle: {
+          fontFamily: "SourceSans3",
+        },
+        sceneStyle: {
+          backgroundColor: primaryColor,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Home",
+          headerShown: false,
           tabBarIcon: ({ color }) => (
             <TabIcon
               size={28}
@@ -45,32 +55,6 @@ export default function TabLayout() {
             <TabIcon
               size={24}
               icon={{ type: "ant", name: "unordered-list" }}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="shopping"
-        options={{
-          title: "Shopping List",
-          tabBarIcon: ({ color }) => (
-            <TabIcon
-              size={28}
-              icon={{ type: "feather", name: "shopping-cart" }}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="search"
-        options={{
-          title: "Search",
-          tabBarIcon: ({ color }) => (
-            <TabIcon
-              size={28}
-              icon={{ type: "feather", name: "search" }}
               color={color}
             />
           ),
