@@ -1,26 +1,12 @@
 import ThemedButton from "@/components/ui/ThemedButton";
 import { ThemedInput } from "@/components/ui/ThemedInput";
 import ThemedText from "@/components/ui/ThemedText";
+import { getBrandDisplayName } from "@/utils";
 import { getSupabaseClient } from "@/utils/supabase";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-
-const getBrandDisplayName = (brand: string) => {
-  switch (brand) {
-    case "dmc":
-      return "DMC";
-    case "anchor":
-      return "Anchor";
-    case "classicColorworks":
-      return "Classic Colorworks";
-    case "weeksDyeWorks":
-      return "Weeks Dye Works";
-    default:
-      return brand;
-  }
-};
 
 const getThreadCodes = (thread: any) => {
   const codes: string[] = [];
@@ -56,7 +42,6 @@ export default function AppRoot() {
       .concat([thread.description.replace(/ /g, ""), thread.brand])
       .concat(threadCodes ?? []);
 
-    console.log(keywords);
     return keywords.some(
       (keyword: string | number) =>
         String(keyword)
@@ -125,12 +110,11 @@ export default function AppRoot() {
                 // eslint-disable-next-line react/no-children-prop
                 children={null}
                 onPress={() => {
-                  console.log("Pressed", item.brand, item.code);
                   router.push({
                     pathname: "/threads/[brand]/[id]",
                     params: {
                       brand: String(item.brand),
-                      id: String(item.code),
+                      id: String(item.code ?? item.description),
                     },
                   });
                 }}
