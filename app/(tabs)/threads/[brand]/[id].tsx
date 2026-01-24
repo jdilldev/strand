@@ -1,5 +1,5 @@
 import ThemedText from "@/components/ui/ThemedText";
-import { useSupabaseItem } from "@/hooks/useGetThreadFromDatabase";
+import { useSupabaseItem } from "@/hooks/use-get-thread-from-database";
 import { getBrandDisplayName } from "@/utils";
 import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native";
@@ -89,6 +89,9 @@ export default function ThreadDetailScreen() {
           <ThemedText variant="body">{id}</ThemedText>
         </View>
       </View>
+      <ThemedText variant="body" bold>
+        Related
+      </ThemedText>
       <View
         style={{
           display: "flex",

@@ -9,17 +9,18 @@ import { FlatList, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 const getThreadCodes = (thread: any) => {
-  const codes: string[] = [];
+  let codes: string[] = [];
 
   if (thread.dmc_codes) {
-    codes.concat(thread.dmc_codes);
-  }
-  if (thread.dmc_code) {
-    codes.push(thread.dmc_code);
+    codes = codes.concat(thread.dmc_codes);
   }
 
   if (thread.anchor_codes) {
-    codes.concat(thread.anchor_codes);
+    codes = codes.concat(thread.anchor_codes);
+  }
+
+  if (thread.classic_colorworks) {
+    codes.push(thread.classic_colorworks.toLowerCase());
   }
 
   if (thread.code) {
