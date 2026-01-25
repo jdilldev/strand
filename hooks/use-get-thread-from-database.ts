@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "@/utils/supabase";
+import { supabase } from "@/utils/supabase";
 import { useEffect, useState } from "react";
 
 type ThreadItemResult<T> = {
@@ -10,10 +10,8 @@ type ThreadItemResult<T> = {
 export function useSupabaseItem<T>(
   table: string,
   column: string,
-  value: string | number | undefined
+  value: string | number | undefined,
 ): ThreadItemResult<T> {
-  const supabase = getSupabaseClient();
-
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

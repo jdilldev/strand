@@ -12,3 +12,14 @@ export const getBrandDisplayName = (brand: string) => {
       return brand;
   }
 };
+
+export const formatTimestamp = (
+  timestamp: string | number | Date,
+  options?: Intl.DateTimeFormatOptions,
+) => {
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    ...options,
+  }).format(new Date(timestamp));
+};

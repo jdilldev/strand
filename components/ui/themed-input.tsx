@@ -20,6 +20,7 @@ export function ThemedInput({
   label,
   error,
   style,
+  showSearchIcon = false,
   ...props
 }: ThemedInputProps) {
   const textColor = useThemeColor({}, "text");
@@ -31,12 +32,14 @@ export function ThemedInput({
       {label && (
         <Text style={[styles.label, { color: textColor }]}>{label}</Text>
       )}
-      <EvilIcons
-        style={styles.searchIcon}
-        name={"search"}
-        size={24}
-        color={textColor}
-      />
+      {showSearchIcon && (
+        <EvilIcons
+          style={styles.searchIcon}
+          name={"search"}
+          size={24}
+          color={textColor}
+        />
+      )}
       <TextInput
         {...props}
         placeholder={placeholder}

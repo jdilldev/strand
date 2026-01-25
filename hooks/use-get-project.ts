@@ -1,15 +1,7 @@
 // hooks/useProject.ts
-import { getSupabaseClient } from "@/utils/supabase";
+import { Project } from "@/types";
+import { supabase } from "@/utils/supabase";
 import { useCallback, useEffect, useState } from "react";
-
-const supabase = getSupabaseClient();
-
-export type Project = {
-  id: string;
-  name: string;
-  created_at: string;
-  // add other columns here
-};
 
 export function useProject(projectId: string | null) {
   const [project, setProject] = useState<Project | null>(null);
@@ -26,7 +18,7 @@ export function useProject(projectId: string | null) {
     setError(null);
 
     const { data, error } = await supabase
-      .from("project")
+      .from("projects")
       .select("*")
       .eq("id", projectId)
       .single();

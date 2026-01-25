@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import ThemedText from "./ThemedText";
+import ThemedText from "./themed-text";
 
 interface ThemedButtonProps {
   children: string | null;

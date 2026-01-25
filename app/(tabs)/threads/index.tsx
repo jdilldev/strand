@@ -1,8 +1,8 @@
-import ThemedButton from "@/components/ui/ThemedButton";
-import { ThemedInput } from "@/components/ui/ThemedInput";
-import ThemedText from "@/components/ui/ThemedText";
+import ThemedButton from "@/components/ui/themed-button";
+import { ThemedInput } from "@/components/ui/themed-input";
+import ThemedText from "@/components/ui/themed-text";
 import { getBrandDisplayName } from "@/utils";
-import { getSupabaseClient } from "@/utils/supabase";
+import { supabase } from "@/utils/supabase";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
@@ -31,7 +31,6 @@ const getThreadCodes = (thread: any) => {
 };
 
 export default function AppRoot() {
-  const supabase = getSupabaseClient();
   const [allThreads, setAllThreads] = useState<any[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const router = useRouter();
@@ -47,7 +46,7 @@ export default function AppRoot() {
       (keyword: string | number) =>
         String(keyword)
           .toLowerCase()
-          .includes(searchText.replace(/ /g, "").toLowerCase()) // ignore spaces and case in search
+          .includes(searchText.replace(/ /g, "").toLowerCase()), // ignore spaces and case in search
     );
   };
 
@@ -73,7 +72,7 @@ export default function AppRoot() {
     }
 
     getTodos();
-  }, [supabase]);
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -82,6 +81,7 @@ export default function AppRoot() {
           placeholder="Search for threads"
           value={searchText}
           onChangeText={setSearchText}
+          showSearchIcon
         />
         <FlatList
           style={{

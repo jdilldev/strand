@@ -1,14 +1,11 @@
-import ThemedButton from "@/components/ui/ThemedButton";
-import ThemedText from "@/components/ui/ThemedText";
+import ThemedButton from "@/components/ui/themed-button";
+import ThemedText from "@/components/ui/themed-text";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import { getSupabaseClient } from "@/utils/supabase";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 export default function AppRoot() {
-  const supabase = getSupabaseClient();
   const textColor = useThemeColor({}, "text");
-  const primaryColor = useThemeColor({}, "primary");
   const styles = createStyles(textColor);
 
   return (

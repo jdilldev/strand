@@ -1,24 +1,14 @@
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 
-let supbaseClient: SupabaseClient | null = null;
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY!;
 
-export const getSupabaseClient = () => {
-  const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.EXPO_PUBLIC_SUPABASE_KEY;
+export const supabase = createClient(supabaseUrl, supabaseKey);
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error(
-      `Supabase env variables are not set: ${supabaseUrl} ${supabaseKey}`
-    );
-  }
+export function getPublicImageUrl(bucket: string, path: string | null) {
+  if (!path) return null;
 
-  return supbaseClient
-    ? supbaseClient
-    : createClient(supabaseUrl, supabaseKey, {
-        auth: {
-          autoRefreshToken: true,
-          persistSession: true,
-          detectSessionInUrl: false,
-        },
-      });
-};
+  const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+
+  return data.publicUrl;
+}

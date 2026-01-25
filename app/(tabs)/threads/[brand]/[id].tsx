@@ -1,4 +1,4 @@
-import ThemedText from "@/components/ui/ThemedText";
+import ThemedText from "@/components/ui/themed-text";
 import { useSupabaseItem } from "@/hooks/use-get-thread-from-database";
 import { getBrandDisplayName } from "@/utils";
 import { useLocalSearchParams } from "expo-router";
