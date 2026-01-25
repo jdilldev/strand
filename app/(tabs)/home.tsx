@@ -1,5 +1,6 @@
 import ThemedButton from "@/components/ui/themed-button";
 import ThemedText from "@/components/ui/themed-text";
+import { ThreadCard } from "@/components/ui/thread-card";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -28,12 +29,8 @@ export default function AppRoot() {
               gap: 8,
             }}
           >
-            <ThemedButton
-              style={styles.threadCard}
-            >{`Have (${372})`}</ThemedButton>
-            <ThemedButton
-              style={styles.threadCard}
-            >{`Need (${32})`}</ThemedButton>
+            <ThreadCard text="Have" value={0} />
+            <ThreadCard text="Need" value={0} />
           </View>
         </View>
         <ThemedButton>Browse Thread Catalog</ThemedButton>
@@ -56,9 +53,5 @@ const createStyles = (textColor: string) =>
       borderWidth: 1,
       padding: 12,
       gap: 8,
-    },
-    threadCard: {
-      flex: 1,
-      padding: 15,
     },
   });

@@ -1,6 +1,8 @@
 // app/(tabs)/projects/index.tsx
 import ThemedText from "@/components/ui/themed-text";
 import { useProjects } from "@/hooks/use-get-projects";
+import { Project } from "@/types";
+import { getImageUrl } from "@/utils/supabase";
 import { useRouter } from "expo-router";
 import { useCallback } from "react";
 import {
@@ -23,21 +25,22 @@ export default function ProjectsList() {
     });
   };
 
-  const renderItem = useCallback(
-    ({ item }: { item: { id: string; title: string } }) => (
+  const renderItem = useCallback(({ item }: { item: Project }) => {
+    const imageUrl =
+      getImageUrl("project_images", item.imageUrl) ??
+      "https://reactnative.dev/img/tiny_logo.png";
+
+    return (
       <TouchableOpacity
         style={styles.item}
         onPress={() => onProjectPress(item)}
       >
-        <Image
-          source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
-          style={styles.thumbnail}
-        />
+        <Image source={{ uri: imageUrl }} style={styles.thumbnail} />
         <ThemedText variant="h3">{item.title}</ThemedText>
       </TouchableOpacity>
-    ),
-    [],
-  );
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading)
     return (
