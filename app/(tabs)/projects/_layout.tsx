@@ -19,14 +19,14 @@ export default function ProjectsStackLayout() {
         contentStyle: { backgroundColor: primaryColor },
       }}
     >
-      {/* Project list screen */}
       <Stack.Screen name="index" options={{ title: "Projects" }} />
-
-      {/* Project details screen */}
       <Stack.Screen
         name="project-details"
         options={{ title: "Project Details" }}
       />
+
+      {/* ⬇️ no title here */}
+      <Stack.Screen name="project-form" />
     </Stack>
   );
 }

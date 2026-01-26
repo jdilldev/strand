@@ -7,20 +7,21 @@ import {
   TextInputProps,
   View,
 } from "react-native";
+import ThemedText from "./themed-text";
 
 type ThemedInputProps = TextInputProps & {
   label?: string;
   error?: string;
-  placeholder?: string;
   showSearchIcon?: boolean;
+  textarea?: boolean;
 };
 
 export function ThemedInput({
-  placeholder,
   label,
   error,
   style,
   showSearchIcon = false,
+  textarea = false,
   ...props
 }: ThemedInputProps) {
   const textColor = useThemeColor({}, "text");
@@ -28,33 +29,42 @@ export function ThemedInput({
   const errorColor = useThemeColor({}, "error");
 
   return (
-    <View style={[styles.container, { borderColor: textColor }]}>
-      {label && (
-        <Text style={[styles.label, { color: textColor }]}>{label}</Text>
-      )}
-      {showSearchIcon && (
-        <EvilIcons
-          style={styles.searchIcon}
-          name={"search"}
-          size={24}
-          color={textColor}
-        />
-      )}
-      <TextInput
-        {...props}
-        placeholder={placeholder}
-        placeholderTextColor={`${textColor}99`}
+    <View style={styles.wrapper}>
+      {label && <ThemedText variant="h2">{label}</ThemedText>}
+
+      <View
         style={[
-          styles.input,
-          {
-            color: textColor,
-            backgroundColor: primaryColor,
-            borderColor: error ? errorColor : textColor,
-            fontFamily: "SourceSans3-Light",
-          },
-          style,
+          styles.inputContainer,
+          { borderColor: error ? errorColor : textColor },
         ]}
-      />
+      >
+        {showSearchIcon && (
+          <EvilIcons
+            name="search"
+            size={24}
+            color={textColor}
+            style={styles.searchIcon}
+          />
+        )}
+
+        <TextInput
+          {...props}
+          placeholderTextColor={`${textColor}99`}
+          style={[
+            styles.input,
+            textarea && styles.textarea,
+            {
+              color: textColor,
+              backgroundColor: primaryColor,
+              fontFamily: "SourceSans3-Light",
+            },
+            style,
+          ]}
+          multiline={textarea}
+          textAlignVertical={textarea ? "top" : "center"}
+          numberOfLines={textarea ? 4 : 1}
+        />
+      </View>
 
       {error && (
         <Text style={[styles.error, { color: errorColor }]}>{error}</Text>
@@ -64,30 +74,32 @@ export function ThemedInput({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+  wrapper: {
     width: "90%",
+    marginBottom: 16,
   },
   label: {
     marginBottom: 6,
     fontSize: 14,
-    fontWeight: "500",
-    flex: 0.1,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 6,
   },
   searchIcon: {
-    //flex: 0.1,
+    marginRight: 4,
   },
   input: {
+    flex: 1,
     fontSize: 16,
-    flex: 0.9,
+  },
+  textarea: {
+    minHeight: 100, // 👈 makes it feel multiline
   },
   error: {
     marginTop: 4,

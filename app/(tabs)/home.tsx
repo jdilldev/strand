@@ -1,3 +1,4 @@
+import { ProjectsList } from "@/components/ui/projects-list";
 import ThemedButton from "@/components/ui/themed-button";
 import ThemedText from "@/components/ui/themed-text";
 import { ThreadCard } from "@/components/ui/thread-card";
@@ -36,6 +37,7 @@ export default function AppRoot() {
         <ThemedButton>Browse Thread Catalog</ThemedButton>
         <View style={styles.homeScreenSection}>
           <ThemedText variant="h2">{`My Projects`}</ThemedText>
+          <ProjectsList />
         </View>
         <View style={styles.homeScreenSection}>
           <ThemedText variant="h2">{`Recently Viewed Colors`}</ThemedText>

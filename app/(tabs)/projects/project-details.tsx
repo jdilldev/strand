@@ -6,13 +6,26 @@ import { useProject } from "@/hooks/use-get-project";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { formatTimestamp } from "@/utils";
 import { getImageUrl } from "@/utils/supabase";
-import { RelativePathString, useLocalSearchParams } from "expo-router";
-import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
+import {
+  RelativePathString,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
+import {
+  ActivityIndicator,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ProjectDetails() {
   const params = useLocalSearchParams<{ id: string; title?: string }>();
+  const router = useRouter();
   const borderColor = useThemeColor({}, "text");
   const { project, loading, error } = useProject(params.id ?? null);
+  const textColor = useThemeColor({}, "text");
 
   if (loading) {
     return (
@@ -36,7 +49,20 @@ export default function ProjectDetails() {
 
   return (
     <View style={styles.container}>
-      <ThemedText variant="h1">{project.title}</ThemedText>
+      <View style={styles.header}>
+        <ThemedText variant="h2">{project.title ?? "Project"}</ThemedText>
+
+        <TouchableOpacity
+          onPress={() =>
+            router.push({
+              pathname: "/projects/project-form",
+              params: { id: project.id, title: project.title },
+            })
+          }
+        >
+          <Feather name="edit" size={20} color={textColor} />
+        </TouchableOpacity>
+      </View>
       <ThemedText variant="h3">
         Started:{" "}
         {formatTimestamp(project.createdAt, {
@@ -74,7 +100,12 @@ export default function ProjectDetails() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, display: "flex", gap: 6 },
+  container: { flex: 1, paddingHorizontal: 16, display: "flex", gap: 6 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   center: { flex: 1, alignItems: "center", justifyContent: "center" },
   threadCard: {
     flex: 1,

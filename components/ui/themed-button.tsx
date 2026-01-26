@@ -12,7 +12,7 @@ import ThemedText from "./themed-text";
 interface ThemedButtonProps {
   children: string | null;
   onPress?: (event: GestureResponderEvent) => void;
-  variant?: "filled" | "outline";
+  variant?: "filled" | "outlined";
   type?: "primary" | "secondary";
   style?: ViewStyle; // outer container
   disabled?: boolean;
@@ -46,7 +46,7 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
       style={[
         styles.button,
         {
-          borderWidth: variant === "outline" ? 2 : 0,
+          borderWidth: variant === "outlined" ? 2 : 0,
           borderColor: type === "primary" ? buttonPrimary : buttonSecondary,
           backgroundColor:
             variant === "filled"
@@ -68,7 +68,7 @@ const ThemedButton: React.FC<ThemedButtonProps> = ({
         <ThemedText
           style={[
             {
-              color: textColor,
+              color: variant === "filled" ? textColor : buttonPrimary,
               textAlign: "center",
               fontFamily: "SourceSans3-Medium",
             },
